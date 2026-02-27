@@ -26,8 +26,13 @@
         
         .list-group-item { border: none; background: #f8f9fa; margin-bottom: 5px; border-radius: 8px !important; }
         
-        .btn-primary { background-color: #007bff; border: none; padding: 12px; font-weight: bold; border-radius: 10px; }
+        .btn-primary { background-color: #007bff; border: none; padding: 12px; font-weight: bold; border-radius: 10px; transition: 0.3s; }
+        .btn-primary:hover { background-color: #0056b3; }
         .btn-primary:disabled { background-color: #a0cfff; opacity: 0.7; cursor: not-allowed; }
+
+        /* Animasi fade in untuk preview gambar */
+        #img-preview { animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -44,16 +49,16 @@
                 <div class="card p-4">
                     <h5 class="mb-3 fw-bold text-primary"><i class="bi bi-person-badge me-2"></i>Data Identitas</h5>
                     <div class="mb-3">
-                        <label class="form-label">Nama Personil Toko</label>
+                        <label for="nama" class="form-label">Nama Personil Toko</label>
                         <input type="text" id="nama" class="form-control mandatory" placeholder="Masukkan nama Anda">
                     </div>
                     <div class="row">
                         <div class="col-6">
-                            <label class="form-label">Kode/Nama Toko</label>
+                            <label for="toko" class="form-label">Kode/Nama Toko</label>
                             <input type="text" id="toko" class="form-control mandatory" placeholder="Contoh: SMD01">
                         </div>
                         <div class="col-6">
-                            <label class="form-label">Nomor Rak</label>
+                            <label for="rak" class="form-label">Nomor Rak</label>
                             <input type="text" id="rak" class="form-control mandatory" placeholder="Contoh: Rak A-1">
                         </div>
                     </div>
@@ -88,16 +93,19 @@
                             <i class="bi bi-cloud-arrow-up text-primary fs-1"></i>
                             <p class="small text-muted mb-0">Klik untuk ambil foto atau pilih galeri</p>
                         </div>
-                        <img id="img-preview" src="" class="preview-img">
+                        <img id="img-preview" src="" class="preview-img" alt="Preview">
                         <input type="file" id="file-input" class="d-none" accept="image/*" capture="environment">
                     </div>
                     <div id="file-info" class="text-center mt-2 small text-success fw-bold"></div>
                 </div>
 
                 <button id="btn-submit" class="btn btn-primary w-100 shadow-sm" disabled>
-                    KIRIM DATA ONLINE
+                    <span id="btn-text">KIRIM DATA ONLINE</span>
                 </button>
-                <button onclick="location.reload()" class="btn btn-link w-100 mt-2 text-decoration-none text-muted small">Reset Form</button>
+                
+                <button onclick="window.location.reload()" class="btn btn-link w-100 mt-2 text-decoration-none text-muted small">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset Form
+                </button>
 
             </div>
         </div>
