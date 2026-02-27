@@ -1,5 +1,5 @@
-// GANTI DENGAN URL WEB APP HASIL DEPLOY GOOGLE APPS SCRIPT ANDA
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxo3HLbiIm9L5oxghrqQ7lkp-v2sf0-luLawQNDGqTLtAOqMWdFk_huG8ZTvO-xRPnu/exec";
+// URL Web App dari Google Apps Script
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxo3HLbiIm9L5oxghrqQ7lkp-v2sf0-luLawQNDGqTLtAOqMWdFk_huG8ZTvO-xRPnu/exec';
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnSubmit = document.getElementById('btn-submit');
@@ -12,51 +12,53 @@ document.addEventListener('DOMContentLoaded', () => {
     let base64Image = "";
 
     // 1. Fungsi Validasi Real-time
+    // Mengecek apakah semua input teks sudah terisi dan foto sudah diupload
     function validateForm() {
         let allFilled = true;
         mandatoryInputs.forEach(input => {
             if (input.value.trim() === "") allFilled = false;
         });
 
-        // Tombol aktif jika Nama, Toko, Rak terisi DAN Foto sudah terpilih
+        // Tombol Aktif jika (Input Identitas Lengkap) DAN (Foto sudah ada)
         btnSubmit.disabled = !(allFilled && base64Image !== "");
     }
 
-    // Pantau setiap perubahan pada input teks
+    // Pasang listener pada setiap input mandatory (Nama, Toko, Rak)
     mandatoryInputs.forEach(input => {
         input.addEventListener('input', validateForm);
     });
 
-    // 2. Fungsi Menangkap File & Konversi ke Base64
+    // 2. Handler Ambil Gambar & Konversi ke Base64
     fileInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            // Validasi ukuran (Opsional: maks 5MB)
+            // Validasi ukuran file (opsional, contoh: max 5MB)
             if (file.size > 5 * 1024 * 1024) {
-                alert("File terlalu besar, maksimal 5MB");
+                alert("Ukuran foto terlalu besar! Maksimal 5MB.");
                 this.value = "";
                 return;
             }
 
             const reader = new FileReader();
             reader.onload = function(event) {
-                base64Image = event.target.result;
+                base64Image = event.target.result; // Data gambar dalam format teks base64
                 imgPreview.src = base64Image;
                 imgPreview.style.display = 'block';
                 instruction.style.display = 'none';
-                fileInfo.textContent = "Foto berhasil dipilih: " + file.name;
-                validateForm();
+                fileInfo.textContent = "Foto siap: " + file.name;
+                validateForm(); // Cek validasi kembali setelah foto masuk
             };
             reader.readAsDataURL(file);
         }
     });
 
-    // 3. Fungsi Kirim Data
+    // 3. Fungsi Kirim Data saat Tombol diklik
     btnSubmit.addEventListener('click', async () => {
-        // Efek loading pada tombol
+        // Berikan visual loading pada tombol
         btnSubmit.disabled = true;
-        btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Sedang Mengirim...`;
+        btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sedang Mengirim...`;
 
+        // Susun data yang akan dikirim (Payload)
         const payload = {
             nama: document.getElementById('nama').value,
             toko: document.getElementById('toko').value,
@@ -71,21 +73,27 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            // Mengirim ke Google Apps Script
+            // Kirim data ke Google Apps Script menggunakan fetch
             await fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // Mode no-cors penting untuk pengiriman ke Google Script
-                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors', // Penting agar tidak terblokir kebijakan CORS Google
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(payload)
             });
 
-            // Karena mode no-cors, kita anggap sukses jika tidak masuk ke catch
-            alert("SUKSES! Data berhasil disimpan ke Sheet 'Data'.");
-            location.reload(); // Refresh halaman setelah sukses
+            // Berikan notifikasi sukses
+            alert("SUKSES! Data Laporan Anda berhasil terkirim ke Google Sheets.");
+            
+            // Refresh halaman agar form bersih kembali
+            location.reload();
 
         } catch (error) {
-            console.error('Error:', error);
-            alert("Gagal mengirim data. Pastikan koneksi internet stabil.");
+            console.error('Terjadi kesalahan:', error);
+            alert("Gagal mengirim data. Silakan cek koneksi internet Anda atau hubungi admin.");
+            
+            // Kembalikan tombol ke kondisi normal jika gagal
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = "KIRIM DATA ONLINE";
         }
