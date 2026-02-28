@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Robust Submission Logic
     btnSubmit.addEventListener('click', async () => {
         btnSubmit.disabled = true;
-        btnSubmit.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> SYNCING...`;
+        btnSubmit.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> MENGIRIM...`;
 
         const checks = [];
         if(document.getElementById('check-plano').checked) checks.push("PLANOGRAM OK");
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             Swal.fire({
                 icon: 'success',
                 title: 'LAPORAN TERKIRIM',
-                text: 'Data telah disinkronkan ke sistem.',
+                text: 'Data telah dikirim ke AC dan AM.',
                 confirmButtonColor: '#000',
                 confirmButtonText: 'OKE'
             }).then(() => location.reload());
