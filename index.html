@@ -70,3 +70,63 @@
                     </div>
                     <div class="row">
                         <div class="col-6">
+                            <label for="toko" class="form-label">Kode Toko</label>
+                            <input type="text" id="toko" class="form-control" placeholder="Contoh: SMD01">
+                        </div>
+                        <div class="col-6">
+                            <label for="rak" class="form-label">Nomor Rak</label>
+                            <input type="text" id="rak" class="form-control" placeholder="Contoh: Rak A-1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-4">
+                    <h5 class="mb-3 fw-bold text-primary"><i class="bi bi-list-check me-2"></i>Checklist Pekerjaan</h5>
+                    <div class="list-group">
+                        <label class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Planogram Sesuai</span>
+                            <input class="form-check-input" type="checkbox" id="check-plano">
+                        </label>
+                        <label class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Kebersihan Rak</span>
+                            <input class="form-check-input" type="checkbox" id="check-bersih">
+                        </label>
+                        <label class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Label Price Update</span>
+                            <input class="form-check-input" type="checkbox" id="check-label">
+                        </label>
+                        <label class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Sudah Cek Expired</span>
+                            <input class="form-check-input" type="checkbox" id="check-exp">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card p-4">
+                    <h5 class="mb-3 fw-bold text-primary"><i class="bi bi-camera-fill me-2"></i>Bukti Foto Rak</h5>
+                    <div class="upload-box" onclick="document.getElementById('file-input').click()">
+                        <div id="instruction">
+                            <i class="bi bi-cloud-arrow-up-fill text-primary fs-1"></i>
+                            <p class="small text-muted mb-0 mt-2">Klik untuk ambil foto atau pilih galeri</p>
+                        </div>
+                        <img id="preview" src="" class="preview-img">
+                        <input type="file" id="file-input" class="d-none" accept="image/*" capture="environment">
+                    </div>
+                    <div id="file-info" class="text-center mt-2 small text-success fw-bold"></div>
+                </div>
+
+                <button id="btn-submit" class="btn btn-primary w-100 shadow-sm mt-2" disabled>
+                    <i class="bi bi-send-fill me-2"></i>KIRIM DATA ONLINE
+                </button>
+                
+                <button onclick="window.location.reload()" class="btn btn-link w-100 mt-2 text-decoration-none text-muted small">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset Form
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
