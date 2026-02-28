@@ -17,28 +17,46 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let base64Image = "";
 
-    // --- LOGIKA SEARCH DATABASE TOKO (SHEET STRUKTUR) ---
+    // --- LOGIKA SEARCH DATABASE TOKO (HYBRID CACHE) ---
+    let cachedTokoData = []; // Tempat menyimpan data sementara
+
     async function fetchTokoDatabase() {
         try {
-            // Memanggil Apps Script dengan parameter action getToko
             const response = await fetch(`${SCRIPT_URL}?action=getToko`);
             if (!response.ok) throw new Error('Network response was not ok');
-            const data = await response.json();
-            
-            tokoList.innerHTML = ""; // Bersihkan list
-            data.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item; 
-                tokoList.appendChild(option);
-            });
-            console.log("Database Toko Terunduh");
+            cachedTokoData = await response.json();
+            console.log("Database Toko Terunduh ke Cache");
         } catch (err) {
             console.error("Gagal memuat database toko:", err);
         }
     }
 
-    // Jalankan pengambilan data saat halaman dibuka
+    // Jalankan pengambilan data segera saat halaman dibuka
     fetchTokoDatabase();
+
+    // Trigger List saat mengetik (Input Event)
+    tokoInput.addEventListener('input', () => {
+        const val = tokoInput.value.trim().toUpperCase();
+        
+        // Jika input kosong, hapus semua opsi agar list tidak muncul
+        if (val.length === 0) {
+            tokoList.innerHTML = "";
+            return;
+        }
+
+        // Tampilkan sugesti hanya yang cocok dengan ketikan
+        const filtered = cachedTokoData.filter(item => 
+            item.toUpperCase().includes(val)
+        );
+
+        // Update datalist secara dinamis
+        tokoList.innerHTML = ""; 
+        filtered.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item; 
+            tokoList.appendChild(option);
+        });
+    });
 
     // 1. Auto Uppercase & Validation Logic
     const inputs = ['nama', 'toko', 'rak'];
