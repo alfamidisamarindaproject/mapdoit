@@ -1,8 +1,8 @@
 /**
- * MAP DO IT - Ultimate Pro Script
+ * MAP DO IT - Ultimate Pro Script (Hyper-Speed Edition)
  */
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRQdAPT8XmknyMYcOkiD16yRA3wOaCfZvl3ihP5gj6lAfl-8aR8w3wQ_Dh88M5clnP/exec"; // Masukkan URL /exec Anda
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRQdAPT8XmknyMYcOkiD16yRA3wOaCfZvl3ihP5gj6lAfl-8aR8w3wQ_Dh88M5clnP/exec"; 
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnSubmit = document.getElementById('btn-submit');
@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const percentage = (filledCount / 4) * 100;
         progressBar.style.width = percentage + "%";
         
-        // Final Button Validation
         const isAllSet = inputs.every(id => document.getElementById(id).value.trim() !== "") && base64Image;
         btnSubmit.disabled = !isAllSet;
     };
@@ -36,20 +35,22 @@ document.addEventListener('DOMContentLoaded', () => {
     inputs.forEach(id => {
         const el = document.getElementById(id);
         el.addEventListener('input', () => {
-            // PAKSA SEMUA HURUF BESAR
             el.value = el.value.toUpperCase();
             updateProgress();
         });
     });
 
-    // 2. High Quality Image Compression
+    // 2. High Speed Image Compression with Timer
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
+        // MULAI HITUNG WAKTU
+        const startTime = performance.now();
+
         Swal.fire({
             title: 'MEMPROSES FOTO',
-            text: 'Mengoptimalkan kualitas...',
+            text: 'Optimasi kecepatan tinggi...',
             allowOutsideClick: false,
             didOpen: () => Swal.showLoading()
         });
@@ -59,18 +60,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 1200; // Kualitas HD
+                
+                // OPTIMASI: 900px adalah sweet spot untuk kecepatan & kejernihan di GSheet
+                const MAX_WIDTH = 900; 
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * (MAX_WIDTH / img.width);
-                const ctx = canvas.getContext('2d');
+                
+                // OPTIMASI: Mematikan alpha channel mempercepat render hingga 2x
+                const ctx = canvas.getContext('2d', { alpha: false });
+                
                 ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
+                ctx.imageSmoothingQuality = 'low'; // Menghemat CPU saat memproses gambar besar
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                base64Image = canvas.toDataURL('image/jpeg', 0.85);
+                // OPTIMASI: Quality 0.7 sangat ringan namun tetap tajam untuk teks rak
+                base64Image = canvas.toDataURL('image/jpeg', 0.7);
+                
                 preview.src = base64Image;
                 preview.style.display = 'block';
                 instruction.style.display = 'none';
+                
+                // SELESAI HITUNG WAKTU & TAMPILKAN DI BADGE
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+                
+                photoStatus.innerHTML = `PHOTO READY (${duration}ms)`;
                 photoStatus.style.display = 'block';
                 cameraBox.classList.add('active');
                 
@@ -118,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             Swal.fire({ icon: 'error', title: 'GAGAL', text: 'Cek koneksi atau coba lagi.' });
             btnSubmit.disabled = false;
-            btnSubmit.innerHTML = `<span>COMPLETE REPORT</span> <i class="ph ph-arrow-right-bold"></i>`;
+            btnSubmit.innerHTML = `<span>KIRIM REPORT</span> <i class="ph ph-arrow-right-bold"></i>`;
         }
     });
 });
