@@ -1,293 +1,167 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MAP DO IT | SGZ1</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MAP DO IT|SGZ1</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-        :root {
-            --bg: #F0F2F5;
-            --primary: #000000;
-            --accent: #007AFF;
-            --surface: rgba(255, 255, 255, 0.85);
-            --text-main: #1C1C1E;
-            --text-sub: #8E8E93;
-            --radius-lg: 28px;
-            --radius-md: 18px;
-        }
+        :root {
+            --bg: #F0F2F5;
+            --primary: #000000;
+            --accent: #007AFF;
+            --surface: rgba(255, 255, 255, 0.9);
+            --text-main: #1C1C1E;
+            --text-sub: #8E8E93;
+            --radius-lg: 28px;
+            --radius-md: 18px;
+        }
 
-        body { 
-            background-color: var(--bg); 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: var(--text-main);
-            padding-bottom: 120px;
-            overflow-x: hidden;
-        }
+        body { 
+            background-color: var(--bg); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: var(--text-main);
+            padding-bottom: 120px;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* Header & Progress */
-        .header-nav {
-            padding: 30px 24px 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .brand { font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; }
-        .progress-container {
-            padding: 0 24px;
-            margin-bottom: 20px;
-        }
-        .progress-bar-custom {
-            height: 6px;
-            background: #E5E5EA;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        #fill-progress {
-            width: 0%;
-            height: 100%;
-            background: var(--accent);
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .header-nav { padding: 30px 24px 10px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; }
+        .progress-container { padding: 0 24px; margin-bottom: 20px; }
+        .progress-bar-custom { height: 6px; background: #E5E5EA; border-radius: 10px; overflow: hidden; }
+        #fill-progress { width: 0%; height: 100%; background: var(--accent); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* Card System */
-        .section-title {
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin: 25px 0 12px 28px;
-        }
+        .section-title { font-size: 0.7rem; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1.5px; margin: 25px 0 12px 28px; }
 
-        .glass-card {
-            background: var(--surface);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin: 0 16px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
-        }
+        .glass-card {
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin: 0 16px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            animation: slideUp 0.6s ease forwards;
+        }
 
-        /* Modern Input */
-        .input-group-modern {
-            margin-bottom: 20px;
-        }
-        .input-group-modern label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            display: block;
-            color: var(--text-sub);
-            padding-left: 4px;
-        }
-        .input-group-modern input {
-            width: 100%;
-            padding: 16px 20px;
-            border-radius: var(--radius-md);
-            border: 1.5px solid transparent;
-            background: rgba(0,0,0,0.04);
-            font-weight: 700;
-            font-size: 0.95rem;
-            transition: 0.3s;
-            text-transform: uppercase; /* UI Visual Uppercase */
-        }
-        .input-group-modern input:focus {
-            outline: none;
-            background: #FFF;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 5px rgba(0, 122, 255, 0.1);
-        }
+        .input-group-modern { margin-bottom: 20px; }
+        .input-group-modern label { font-size: 0.75rem; font-weight: 700; margin-bottom: 6px; display: block; color: var(--text-sub); padding-left: 4px; }
+        .input-group-modern input {
+            width: 100%; padding: 16px 20px; border-radius: var(--radius-md); border: 1.5px solid transparent;
+            background: rgba(0,0,0,0.04); font-weight: 700; font-size: 0.95rem; transition: 0.3s;
+            text-transform: uppercase;
+        }
+        .input-group-modern input:focus { outline: none; background: #FFF; border-color: var(--accent); box-shadow: 0 0 0 5px rgba(0, 122, 255, 0.1); }
 
-        /* Grid Task */
-        .task-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        .task-card {
-            background: rgba(0,0,0,0.04);
-            border-radius: var(--radius-md);
-            padding: 20px 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 2px solid transparent;
-        }
-        .task-card i { font-size: 1.8rem; margin-bottom: 10px; display: block; color: var(--text-sub); }
-        .task-card span { font-size: 0.75rem; font-weight: 700; line-height: 1.2; }
-        
-        .task-input { display: none; }
-        .task-input:checked + .task-card {
-            background: #FFF;
-            border-color: var(--accent);
-            color: var(--accent);
-            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.15);
-        }
-        .task-input:checked + .task-card i { color: var(--accent); }
+        .task-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .task-card { background: rgba(0,0,0,0.04); border-radius: var(--radius-md); padding: 20px 16px; text-align: center; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
+        .task-card i { font-size: 1.8rem; margin-bottom: 10px; display: block; color: var(--text-sub); }
+        .task-card span { font-size: 0.75rem; font-weight: 700; line-height: 1.2; }
+        
+        .task-input { display: none; }
+        .task-input:checked + .task-card { background: #FFF; border-color: var(--accent); color: var(--accent); box-shadow: 0 8px 20px rgba(0, 122, 255, 0.15); }
+        .task-input:checked + .task-card i { color: var(--accent); }
 
-        /* Camera Area */
-        .camera-box {
-            width: 100%;
-            height: 240px;
-            border-radius: var(--radius-lg);
-            background: rgba(0,0,0,0.04);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 2px dashed #C7C7CC;
-            position: relative;
-            overflow: hidden;
-            transition: 0.3s;
-        }
-        .camera-box.active { border: none; background: #000; }
-        .camera-box img { width: 100%; height: 100%; object-fit: cover; }
-        .camera-badge {
-            position: absolute;
-            bottom: 15px;
-            background: var(--accent);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 800;
-        }
+        .camera-box {
+            width: 100%; height: 240px; border-radius: var(--radius-lg); background: rgba(0,0,0,0.04);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 2px dashed #C7C7CC; position: relative; overflow: hidden; transition: 0.3s;
+        }
+        .camera-box.active { border: none; background: #000; }
+        .camera-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        #speed-tag {
+            position: absolute; bottom: 15px; background: rgba(0,0,0,0.7); color: #00FF00;
+            padding: 4px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: 800;
+            backdrop-filter: blur(4px); display: none;
+        }
 
-        /* Submit Button Container */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px 24px 40px;
-            background: rgba(240, 242, 245, 0.8);
-            backdrop-filter: blur(15px);
-            z-index: 1000;
-        }
-        .btn-main {
-            background: var(--primary);
-            color: white;
-            width: 100%;
-            padding: 20px;
-            border-radius: 22px;
-            border: none;
-            font-weight: 800;
-            font-size: 1.05rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .btn-main:disabled { opacity: 0.2; transform: scale(0.96); }
-        .btn-main:not(:disabled):active { transform: scale(0.94); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px 24px 40px; background: rgba(240, 242, 245, 0.8); backdrop-filter: blur(15px); z-index: 1000; }
+        .btn-main {
+            background: var(--primary); color: white; width: 100%; padding: 20px; border-radius: 22px;
+            border: none; font-weight: 800; font-size: 1.05rem; display: flex; justify-content: center; align-items: center; gap: 12px; transition: 0.3s;
+        }
+        .btn-main:disabled { opacity: 0.2; transform: scale(0.96); }
+        .btn-main:not(:disabled):active { transform: scale(0.94); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-up { animation: fadeIn 0.6s ease forwards; }
-    </style>
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
 
-    <div class="header-nav">
-        <div class="brand">MAP DO IT ONLINE | SGZ1<span style="color:var(--accent)">.</span></div>
-        <i class="ph ph-user-circle" style="font-size: 2rem;"></i>
-    </div>
+    <div class="header-nav">
+        <div class="brand">MAP DO IT ONLINE | SGZ1<span style="color:var(--accent)">.</span></div>
+        <button class="btn btn-light rounded-pill p-2 px-3" onclick="location.reload()">
+            <i class="ph ph-arrow-counter-clockwise fw-bold"></i>
+        </button>
+    </div>
 
-    <div class="progress-container">
-        <div class="progress-bar-custom">
-            <div id="fill-progress"></div>
-        </div>
-    </div>
+    <div class="progress-container">
+        <div class="progress-bar-custom"><div id="fill-progress"></div></div>
+    </div>
 
-    <div class="container animate-up">
-        
-        <div class="section-title">Detail Identitas</div>
-        <div class="glass-card">
-            <div class="input-group-modern">
-                <label>Nama</label>
-                <input type="text" id="nama" placeholder="Nama Lengkap" autocomplete="off">
-            </div>
-            <div class="row g-3">
-                <div class="col-6">
-                    <div class="input-group-modern mb-0">
-                        <label>Kode Toko</label>
-                        <input type="text" id="toko" placeholder="SG01" autocomplete="off">
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="input-group-modern mb-0">
-                        <label>No. Rak</label>
-                        <input type="text" id="rak" placeholder="AA1" autocomplete="off">
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="container">
+        <div class="section-title">Detail Identitas</div>
+        <div class="glass-card">
+            <div class="input-group-modern">
+                <label>Nama Lengkap</label>
+                <input type="text" id="nama" placeholder="JOHN DOE" autocomplete="off">
+            </div>
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="input-group-modern mb-0">
+                        <label>Kode Toko</label>
+                        <input type="text" id="toko" placeholder="SG10" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="input-group-modern mb-0">
+                        <label>No. Rak</label>
+                        <input type="text" id="rak" placeholder="AA1" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <div class="section-title">Checklist</div>
-        <div class="glass-card">
-            <div class="task-grid">
-                <label>
-                    <input type="checkbox" id="check-plano" class="task-input">
-                    <div class="task-card">
-                        <i class="ph ph-layout"></i>
-                        <span>PLANOGRAM<br>UPDATE</span>
-                    </div>
-                </label>
-                <label>
-                    <input type="checkbox" id="check-label" class="task-input">
-                    <div class="task-card">
-                        <i class="ph ph-tag-chevron"></i>
-                        <span>LABEL PRICE<br>UPDATE</span>
-                    </div>
-                </label>
-                <label>
-                    <input type="checkbox" id="check-exp" class="task-input">
-                    <div class="task-card">
-                        <i class="ph ph-calendar-check"></i>
-                        <span>EXPIRED DATE<br>CHECK</span>
-                    </div>
-                </label>
-                <label>
-                    <input type="checkbox" id="check-bersih" class="task-input">
-                    <div class="task-card">
-                        <i class="ph ph-broom"></i>
-                        <span>KEBERSIHAN<br>RAK</span>
-                    </div>
-                </label>
-            </div>
-        </div>
+        <div class="section-title">Checklist</div>
+        <div class="glass-card">
+            <div class="task-grid">
+                <label><input type="checkbox" id="check-plano" class="task-input"><div class="task-card"><i class="ph ph-layout"></i><span>PLANOGRAM<br>SUITABLE</span></div></label>
+                <label><input type="checkbox" id="check-label" class="task-input"><div class="task-card"><i class="ph ph-tag-chevron"></i><span>LABEL PRICE<br>ACCURATE</span></div></label>
+                <label><input type="checkbox" id="check-exp" class="task-input"><div class="task-card"><i class="ph ph-calendar-check"></i><span>EXPIRED DATE<br>CHECKED</span></div></label>
+                <label><input type="checkbox" id="check-bersih" class="task-input"><div class="task-card"><i class="ph ph-broom"></i><span>SHELF<br>CLEANLINESS</span></div></label>
+            </div>
+        </div>
 
-        <div class="section-title">BUKTI FOTO</div>
-        <div class="glass-card mb-5">
-            <div class="camera-box" id="upload-trigger" onclick="document.getElementById('file-input').click()">
-                <div id="instruction" class="text-center">
-                    <i class="ph ph-camera-plus" style="font-size: 3rem; color: var(--accent);"></i>
-                    <p class="small fw-bold mt-2" style="color: var(--text-sub);">UPLOAD BUKTI FOTO RAK</p>
-                </div>
-                <img id="preview" src="" style="display: none;">
-                <div id="photo-status" class="camera-badge" style="display: none;">PHOTO READY</div>
-                <input type="file" id="file-input" class="d-none" accept="image/*" capture="environment">
-            </div>
-        </div>
+        <div class="section-title">Bukti Foto</div>
+        <div class="glass-card mb-5">
+            <div class="camera-box" id="drop-zone" onclick="document.getElementById('file-input').click()">
+                <div id="instruction" class="text-center">
+                    <i class="ph ph-camera-plus" style="font-size: 3.5rem; color: var(--accent);"></i>
+                    <p class="small fw-bold mt-2" style="color: var(--text-sub);">UPLOAD BUKTI FOTO</p>
+                </div>
+                <img id="preview" src="" style="display: none;">
+                <div id="speed-tag">SPEED: <span id="ms">0</span>ms</div>
+                <input type="file" id="file-input" class="d-none" accept="image/*" capture="environment">
+            </div>
+        </div>
+    </div>
 
-    </div>
+    <div class="bottom-nav">
+        <button id="btn-submit" class="btn-main shadow-lg" disabled>
+            <span>KIRIM REPORT</span>
+            <i class="ph ph-arrow-right-bold"></i>
+        </button>
+    </div>
 
-    <div class="bottom-nav">
-        <button id="btn-submit" class="btn-main shadow-lg" disabled>
-            <span>KIRIM REPORT</span>
-            <i class="ph ph-arrow-right-bold"></i>
-        </button>
-    </div>
-
-    <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
