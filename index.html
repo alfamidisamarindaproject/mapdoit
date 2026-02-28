@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MAP DO IT | SGZ1</title>
+    <title>MAP DO IT ONLINE | SGZ1</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -13,193 +13,229 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --bg: #F0F2F5;
+            --bg: #F8F9FC;
             --primary: #000000;
             --accent: #007AFF;
-            --surface: rgba(255, 255, 255, 0.85);
+            --accent-soft: rgba(0, 122, 255, 0.1);
+            --surface: rgba(255, 255, 255, 0.9);
             --text-main: #1C1C1E;
             --text-sub: #8E8E93;
-            --radius-lg: 28px;
-            --radius-md: 18px;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
         }
 
         body { 
             background-color: var(--bg); 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             color: var(--text-main);
-            padding-bottom: 120px;
+            padding-bottom: 140px;
             overflow-x: hidden;
+            letter-spacing: -0.2px;
+        }
+
+        /* Smooth Background Blob */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -10%; right: -10%;
+            width: 300px; height: 300px;
+            background: var(--accent-soft);
+            filter: blur(80px);
+            z-index: -1;
+            border-radius: 50%;
         }
 
         /* Header & Progress */
         .header-nav {
-            padding: 30px 24px 10px;
+            padding: 25px 24px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .brand { font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; }
-        .progress-container {
-            padding: 0 24px;
-            margin-bottom: 20px;
+        .brand { 
+            font-weight: 800; 
+            font-size: 1.25rem; 
+            letter-spacing: -1px; 
+            background: linear-gradient(90deg, #000, #444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
+        .progress-container { padding: 0 24px; margin-bottom: 25px; }
         .progress-bar-custom {
-            height: 6px;
+            height: 8px;
             background: #E5E5EA;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
         }
         #fill-progress {
             width: 0%;
             height: 100%;
-            background: var(--accent);
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(90deg, var(--accent), #5AC8FA);
+            transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Card System */
+        /* Card Design */
         .section-title {
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             font-weight: 800;
             color: var(--text-sub);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin: 25px 0 12px 28px;
+            letter-spacing: 1.2px;
+            margin: 28px 0 12px 30px;
         }
 
         .glass-card {
             background: var(--surface);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border-radius: var(--radius-lg);
-            padding: 24px;
+            padding: 22px;
             margin: 0 16px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
         }
 
         /* Modern Input */
-        .input-group-modern {
-            margin-bottom: 20px;
-        }
+        .input-group-modern { margin-bottom: 18px; }
         .input-group-modern label {
             font-size: 0.75rem;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             display: block;
-            color: var(--text-sub);
-            padding-left: 4px;
+            color: var(--text-main);
+            padding-left: 2px;
         }
         .input-group-modern input {
             width: 100%;
-            padding: 16px 20px;
+            padding: 14px 18px;
             border-radius: var(--radius-md);
-            border: 1.5px solid transparent;
-            background: rgba(0,0,0,0.04);
-            font-weight: 700;
+            border: 1.5px solid #F2F2F7;
+            background: #F2F2F7;
+            font-weight: 600;
             font-size: 0.95rem;
-            transition: 0.3s;
-            text-transform: uppercase; /* UI Visual Uppercase */
+            transition: all 0.25s ease;
         }
         .input-group-modern input:focus {
             outline: none;
             background: #FFF;
             border-color: var(--accent);
-            box-shadow: 0 0 0 5px rgba(0, 122, 255, 0.1);
+            box-shadow: 0 0 0 4px var(--accent-soft);
+            transform: translateY(-1px);
         }
 
-        /* Grid Task */
+        /* Grid Task - Redesigned */
         .task-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 14px;
         }
         .task-card {
-            background: rgba(0,0,0,0.04);
+            background: #F2F2F7;
             border-radius: var(--radius-md);
-            padding: 20px 16px;
+            padding: 20px 12px;
             text-align: center;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
-        .task-card i { font-size: 1.8rem; margin-bottom: 10px; display: block; color: var(--text-sub); }
-        .task-card span { font-size: 0.75rem; font-weight: 700; line-height: 1.2; }
+        .task-card i { font-size: 1.6rem; color: var(--text-sub); transition: 0.3s; }
+        .task-card span { font-size: 0.7rem; font-weight: 700; line-height: 1.3; color: var(--text-main); }
         
-        .task-input { display: none; }
         .task-input:checked + .task-card {
             background: #FFF;
             border-color: var(--accent);
-            color: var(--accent);
-            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.15);
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.12);
         }
-        .task-input:checked + .task-card i { color: var(--accent); }
+        .task-input:checked + .task-card i { color: var(--accent); transform: translateY(-2px); }
 
         /* Camera Area */
         .camera-box {
             width: 100%;
-            height: 240px;
+            height: 220px;
             border-radius: var(--radius-lg);
-            background: rgba(0,0,0,0.04);
+            background: #F2F2F7;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 2px dashed #C7C7CC;
+            border: 2px dashed #D1D1D6;
             position: relative;
             overflow: hidden;
-            transition: 0.3s;
+            transition: all 0.4s ease;
         }
-        .camera-box.active { border: none; background: #000; }
+        .camera-box.active { border: none; background: #000; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
         .camera-box img { width: 100%; height: 100%; object-fit: cover; }
+        
         .camera-badge {
             position: absolute;
             bottom: 15px;
             background: var(--accent);
             color: white;
-            padding: 6px 16px;
+            padding: 6px 14px;
             border-radius: 50px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 800;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+            animation: bounceIn 0.5s ease;
         }
 
-        /* Submit Button Container */
+        /* Submit Button */
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px 24px 40px;
-            background: rgba(240, 242, 245, 0.8);
-            backdrop-filter: blur(15px);
+            bottom: 0; left: 0; width: 100%;
+            padding: 20px 24px 45px;
+            background: linear-gradient(to top, var(--bg) 80%, transparent);
             z-index: 1000;
         }
         .btn-main {
             background: var(--primary);
             color: white;
             width: 100%;
-            padding: 20px;
-            border-radius: 22px;
+            padding: 18px;
+            border-radius: 20px;
             border: none;
-            font-weight: 800;
-            font-size: 1.05rem;
+            font-weight: 700;
+            font-size: 1rem;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 12px;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
-        .btn-main:disabled { opacity: 0.2; transform: scale(0.96); }
-        .btn-main:not(:disabled):active { transform: scale(0.94); }
+        .btn-main:disabled { background: #C7C7CC; box-shadow: none; opacity: 0.6; }
+        .btn-main:not(:disabled):active { transform: scale(0.96); opacity: 0.9; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-up { animation: fadeIn 0.6s ease forwards; }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-up { animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
     </style>
 </head>
 <body>
 
     <div class="header-nav">
-        <div class="brand">MAP DO IT ONLINE | SGZ1<span style="color:var(--accent)">.</span></div>
-        <i class="ph ph-user-circle" style="font-size: 2rem;"></i>
+        <div class="brand">MAP DO IT<span style="color:var(--accent)">.</span>PRO</div>
+        <div style="background: white; padding: 8px; border-radius: 12px; box-shadow: var(--shadow);">
+            <i class="ph ph-user-circle-fill" style="font-size: 1.5rem; color: var(--accent);"></i>
+        </div>
     </div>
 
     <div class="progress-container">
@@ -213,8 +249,8 @@
         <div class="section-title">Detail Identitas</div>
         <div class="glass-card">
             <div class="input-group-modern">
-                <label>Nama</label>
-                <input type="text" id="nama" placeholder="Nama Lengkap" autocomplete="off">
+                <label>Nama Pelapor</label>
+                <input type="text" id="nama" placeholder="Contoh: Budi Santoso" autocomplete="off">
             </div>
             <div class="row g-3">
                 <div class="col-6">
@@ -226,52 +262,55 @@
                 <div class="col-6">
                     <div class="input-group-modern mb-0">
                         <label>No. Rak</label>
-                        <input type="text" id="rak" placeholder="AA1" autocomplete="off">
+                        <input type="text" id="rak" placeholder="A-01" autocomplete="off">
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="section-title">Checklist</div>
+        <div class="section-title">Compliance Checklist</div>
         <div class="glass-card">
             <div class="task-grid">
-                <label>
-                    <input type="checkbox" id="check-plano" class="task-input">
+                <label class="m-0">
+                    <input type="checkbox" id="check-plano" class="task-input d-none">
                     <div class="task-card">
-                        <i class="ph ph-layout"></i>
+                        <i class="ph ph-layout-duotone"></i>
                         <span>PLANOGRAM<br>UPDATE</span>
                     </div>
                 </label>
-                <label>
-                    <input type="checkbox" id="check-label" class="task-input">
+                <label class="m-0">
+                    <input type="checkbox" id="check-label" class="task-input d-none">
                     <div class="task-card">
-                        <i class="ph ph-tag-chevron"></i>
+                        <i class="ph ph-tag-chevron-duotone"></i>
                         <span>LABEL PRICE<br>UPDATE</span>
                     </div>
                 </label>
-                <label>
-                    <input type="checkbox" id="check-exp" class="task-input">
+                <label class="m-0">
+                    <input type="checkbox" id="check-exp" class="task-input d-none">
                     <div class="task-card">
-                        <i class="ph ph-calendar-check"></i>
+                        <i class="ph ph-calendar-check-duotone"></i>
                         <span>EXPIRED DATE<br>CHECK</span>
                     </div>
                 </label>
-                <label>
-                    <input type="checkbox" id="check-bersih" class="task-input">
+                <label class="m-0">
+                    <input type="checkbox" id="check-bersih" class="task-input d-none">
                     <div class="task-card">
-                        <i class="ph ph-broom"></i>
+                        <i class="ph ph-broom-duotone"></i>
                         <span>KEBERSIHAN<br>RAK</span>
                     </div>
                 </label>
             </div>
         </div>
 
-        <div class="section-title">BUKTI FOTO</div>
-        <div class="glass-card mb-5">
+        <div class="section-title">Bukti Visual</div>
+        <div class="glass-card mb-4">
             <div class="camera-box" id="upload-trigger" onclick="document.getElementById('file-input').click()">
                 <div id="instruction" class="text-center">
-                    <i class="ph ph-camera-plus" style="font-size: 3rem; color: var(--accent);"></i>
-                    <p class="small fw-bold mt-2" style="color: var(--text-sub);">UPLOAD BUKTI FOTO RAK</p>
+                    <div style="background: white; width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.05);">
+                        <i class="ph ph-camera-plus" style="font-size: 1.8rem; color: var(--accent);"></i>
+                    </div>
+                    <p class="small fw-800 mb-1" style="color: var(--text-main);">AMBIL FOTO RAK</p>
+                    <p style="font-size: 0.65rem; color: var(--text-sub); font-weight: 600;">Pastikan gambar jernih & terang</p>
                 </div>
                 <img id="preview" src="" style="display: none;">
                 <div id="photo-status" class="camera-badge" style="display: none;">PHOTO READY</div>
@@ -282,9 +321,9 @@
     </div>
 
     <div class="bottom-nav">
-        <button id="btn-submit" class="btn-main shadow-lg" disabled>
-            <span>KIRIM REPORT</span>
-            <i class="ph ph-arrow-right-bold"></i>
+        <button id="btn-submit" class="btn-main" disabled>
+            <span>KIRIM LAPORAN</span>
+            <i class="ph ph-paper-plane-tilt-bold"></i>
         </button>
     </div>
 
