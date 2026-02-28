@@ -1,7 +1,5 @@
-/**
- * BAGIAN CLIENT (app.js)
- */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCebljgJdgC2yhn_A8ZVLnxGHyPytgHg81b9W-PCfQLYru5JpZ20KpneAYIZnuqorb/exec";
+// GANTI DENGAN URL WEB APP HASIL DEPLOY ANDA
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxo3HLbiIm9L5oxghrqQ7lkp-v2sf0-luLawQNDGqTLtAOqMWdFk_huG8ZTvO-xRPnu/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnSubmit = document.getElementById('btn-submit');
@@ -10,12 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const mandatoryInputs = document.querySelectorAll('.mandatory');
     let base64Image = "";
 
-    // 1. Kompresi Foto agar ringan
+    // 1. Kompres Foto (Max Lebar 800px)
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        Swal.fire({ title: 'Memproses Foto...', didOpen: () => Swal.showLoading() });
+        Swal.fire({ title: 'Memproses Foto...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
         const reader = new FileReader();
         reader.onload = (event) => {
@@ -41,17 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const validate = () => {
-        let filled = true;
-        mandatoryInputs.forEach(input => { if (input.value.trim() === "") filled = false; });
-        btnSubmit.disabled = !(filled && base64Image !== "");
+        let allFilled = true;
+        mandatoryInputs.forEach(input => { if (input.value.trim() === "") allFilled = false; });
+        btnSubmit.disabled = !(allFilled && base64Image !== "");
     };
 
     mandatoryInputs.forEach(input => input.addEventListener('input', validate));
 
-    // 2. Kirim Data
+    // 2. Kirim Data dengan fetch mode 'no-cors'
     btnSubmit.addEventListener('click', async () => {
         btnSubmit.disabled = true;
-        btnSubmit.innerHTML = "Mengirim...";
+        btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Mengirim...`;
 
         const payload = {
             nama: document.getElementById('nama').value,
@@ -67,29 +65,24 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            // Menggunakan FETCH dengan method POST
             await fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // Menghindari masalah CORS
+                mode: 'no-cors', // Solusi jitu masalah data tidak masuk
                 body: JSON.stringify(payload)
             });
 
-            // Tampilkan Notifikasi di Tengah
+            // Tampilkan Notifikasi Berhasil (Tengah Layar)
             Swal.fire({
                 icon: 'success',
-                title: 'BERHASIL!',
-                text: 'Data telah masuk ke Google Sheet.',
+                title: 'Laporan Terkirim!',
+                text: 'Data berhasil disimpan ke Google Sheets.',
                 confirmButtonColor: '#007bff'
-            }).then(() => window.location.reload());
+            }).then(() => location.reload());
 
-        } catch (err) {
-            Swal.fire({
-                icon: 'error',
-                title: 'GAGAL!',
-                text: 'Terjadi kesalahan sistem.'
-            });
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'Gagal!', text: 'Terjadi kesalahan sistem.' });
             btnSubmit.disabled = false;
-            btnSubmit.innerHTML = "KIRIM DATA";
+            btnSubmit.innerHTML = "KIRIM DATA ONLINE";
         }
     });
 });
