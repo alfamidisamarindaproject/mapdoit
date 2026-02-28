@@ -13,38 +13,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const cameraBox = document.querySelector('.camera-box');
     const photoStatus = document.getElementById('photo-status');
     const tokoInput = document.getElementById('toko');
-    
-    // Inisialisasi Dropdown Custom
     const tokoDropdown = document.getElementById('toko-dropdown');
     
     let base64Image = "";
     let cachedTokoData = []; 
 
-    // --- LOGIKA SEARCH DATABASE TOKO (CUSTOM SCROLLABLE DROPDOWN) ---
+    // --- 1. LOGIKA DATABASE TOKO ---
     async function fetchTokoDatabase() {
         try {
             const response = await fetch(`${SCRIPT_URL}?action=getToko`);
             if (!response.ok) throw new Error('Network response was not ok');
             cachedTokoData = await response.json();
-            console.log("Database Toko Terunduh ke Cache");
+            console.log("Database Toko Terunduh");
         } catch (err) {
             console.error("Gagal memuat database toko:", err);
         }
     }
-
     fetchTokoDatabase();
 
-    // Trigger List saat mengetik
+    // --- 2. LOGIKA DROPDOWN & UPPERCASE (SINKRON) ---
     tokoInput.addEventListener('input', () => {
-        const val = tokoInput.value.trim().toUpperCase();
+        // Paksa Uppercase
+        tokoInput.value = tokoInput.value.toUpperCase();
+        const val = tokoInput.value.trim();
+        
         tokoDropdown.innerHTML = "";
         
         if (val.length === 0) {
             tokoDropdown.style.display = 'none';
+            updateProgress();
             return;
         }
 
-        // Filter data berdasarkan ketikan
+        // Filter data
         const filtered = cachedTokoData.filter(item => 
             item.toUpperCase().includes(val)
         );
@@ -55,28 +56,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 div.className = 'dropdown-item-toko';
                 div.textContent = item;
                 
-                // Event saat item dipilih
-                div.onclick = () => {
+                div.addEventListener('click', () => {
                     tokoInput.value = item;
                     tokoDropdown.style.display = 'none';
-                    updateProgress(); // Validasi ulang setelah pilih
-                };
+                    updateProgress(); 
+                });
                 tokoDropdown.appendChild(div);
             });
             tokoDropdown.style.display = 'block';
         } else {
             tokoDropdown.style.display = 'none';
         }
+        updateProgress();
     });
 
-    // Sembunyikan dropdown jika klik di luar area
+    // Klik di luar untuk menutup dropdown
     document.addEventListener('click', (e) => {
         if (!tokoInput.contains(e.target) && !tokoDropdown.contains(e.target)) {
             tokoDropdown.style.display = 'none';
         }
     });
 
-    // 1. Auto Uppercase & Validation Logic
+    // --- 3. VALIDASI PROGRESS ---
     const inputs = ['nama', 'toko', 'rak'];
     
     const updateProgress = () => {
@@ -93,7 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSubmit.disabled = !isAllSet;
     };
 
-    inputs.forEach(id => {
+    // Logika untuk input selain toko (nama & rak)
+    ['nama', 'rak'].forEach(id => {
         const el = document.getElementById(id);
         el.addEventListener('input', () => {
             el.value = el.value.toUpperCase();
@@ -101,13 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 2. High Speed Image Compression with Timer
+    // --- 4. LOGIKA KAMERA & KOMPRESI ---
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
         const startTime = performance.now();
-
         Swal.fire({
             title: 'MEMPROSES FOTO',
             text: 'Optimasi kecepatan tinggi...',
@@ -123,21 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const MAX_WIDTH = 900; 
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * (MAX_WIDTH / img.width);
-                
                 const ctx = canvas.getContext('2d', { alpha: false });
-                ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'low'; 
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
                 base64Image = canvas.toDataURL('image/jpeg', 0.7);
-                
                 preview.src = base64Image;
                 preview.style.display = 'block';
                 instruction.style.display = 'none';
                 
-                const endTime = performance.now();
-                const duration = Math.round(endTime - startTime);
-                
+                const duration = Math.round(performance.now() - startTime);
                 photoStatus.innerHTML = `PHOTO READY (${duration}ms)`;
                 photoStatus.style.display = 'block';
                 cameraBox.classList.add('active');
@@ -150,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsDataURL(file);
     });
 
-    // 3. Robust Submission Logic
+    // --- 5. LOGIKA KIRIM DATA ---
     btnSubmit.addEventListener('click', async () => {
         btnSubmit.disabled = true;
         btnSubmit.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> MENGIRIM...`;
