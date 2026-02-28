@@ -1,82 +1,65 @@
-// GANTI DENGAN URL WEB APP GOOGLE ANDA
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxo3HLbiIm9L5oxghrqQ7lkp-v2sf0-luLawQNDGqTLtAOqMWdFk_huG8ZTvO-xRPnu/exec';
+/**
+ * BAGIAN CLIENT (app.js)
+ */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxo3HLbiIm9L5oxghrqQ7lkp-v2sf0-luLawQNDGqTLtAOqMWdFk_huG8ZTvO-xRPnu/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnSubmit = document.getElementById('btn-submit');
-    const btnText = document.getElementById('btn-text');
-    const loader = document.getElementById('loader');
     const fileInput = document.getElementById('file-input');
-    const imgPreview = document.getElementById('img-preview');
-    const instruction = document.getElementById('instruction');
+    const preview = document.getElementById('preview');
     const mandatoryInputs = document.querySelectorAll('.mandatory');
-    
     let base64Image = "";
 
-    // 1. Logika Kompresi Foto (Resize ke 800px)
-    fileInput.addEventListener('change', function(e) {
+    // 1. Kompresi Foto agar ringan
+    fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Tampilkan loading sebentar saat proses kompresi di HP
-        Swal.fire({
-            title: 'Memproses Foto...',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
-        });
+        Swal.fire({ title: 'Memproses Foto...', didOpen: () => Swal.showLoading() });
 
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = (event) => {
             const img = new Image();
-            img.onload = function() {
+            img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 800; 
-                const scaleSize = MAX_WIDTH / img.width;
+                const MAX_WIDTH = 800;
+                const scale = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scaleSize;
-
+                canvas.height = img.height * scale;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
+                
                 base64Image = canvas.toDataURL('image/jpeg', 0.7);
-                
-                imgPreview.src = base64Image;
-                imgPreview.style.display = 'block';
-                instruction.style.display = 'none';
-                
+                preview.src = base64Image;
+                preview.style.display = 'block';
                 Swal.close();
-                validateForm();
+                validate();
             };
             img.src = event.target.result;
         };
         reader.readAsDataURL(file);
     });
 
-    function validateForm() {
-        let allFilled = true;
-        mandatoryInputs.forEach(input => {
-            if (input.value.trim() === "") allFilled = false;
-        });
-        btnSubmit.disabled = !(allFilled && base64Image !== "");
-    }
+    const validate = () => {
+        let filled = true;
+        mandatoryInputs.forEach(input => { if (input.value.trim() === "") filled = false; });
+        btnSubmit.disabled = !(filled && base64Image !== "");
+    };
 
-    mandatoryInputs.forEach(input => {
-        input.addEventListener('input', validateForm);
-    });
+    mandatoryInputs.forEach(input => input.addEventListener('input', validate));
 
-    // 2. Logika Kirim Data dengan SweetAlert2
+    // 2. Kirim Data
     btnSubmit.addEventListener('click', async () => {
-        // Tampilan Loading
         btnSubmit.disabled = true;
-        loader.style.display = "inline-block";
-        btnText.innerText = "Mengirim...";
+        btnSubmit.innerHTML = "Mengirim...";
 
         const payload = {
             nama: document.getElementById('nama').value,
             toko: document.getElementById('toko').value,
             rak: document.getElementById('rak').value,
             checklist: {
-                planogram: document.getElementById('check-planogram').checked,
-                kebersihan: document.getElementById('check-kebersihan').checked,
+                planogram: document.getElementById('check-plano').checked,
+                kebersihan: document.getElementById('check-bersih').checked,
                 labelPrice: document.getElementById('check-label').checked,
                 cekExp: document.getElementById('check-exp').checked
             },
@@ -84,39 +67,29 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            // Kirim data ke Google
+            // Menggunakan FETCH dengan method POST
             await fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors', // Menghindari masalah CORS
                 body: JSON.stringify(payload)
             });
 
-            // NOTIFIKASI BERHASIL (TENGAH LAYAR)
+            // Tampilkan Notifikasi di Tengah
             Swal.fire({
                 icon: 'success',
-                title: 'Laporan Terkirim!',
-                text: 'Data berhasil disimpan ke Google Sheets.',
-                confirmButtonColor: '#007bff',
-                timer: 3000
-            }).then(() => {
-                window.location.reload();
-            });
+                title: 'BERHASIL!',
+                text: 'Data telah masuk ke Google Sheet.',
+                confirmButtonColor: '#007bff'
+            }).then(() => window.location.reload());
 
-        } catch (error) {
-            console.error('Error:', error);
-            
-            // NOTIFIKASI GAGAL (TENGAH LAYAR)
+        } catch (err) {
             Swal.fire({
                 icon: 'error',
-                title: 'Gagal Mengirim',
-                text: 'Pastikan koneksi internet stabil dan coba lagi.',
-                confirmButtonColor: '#d33'
+                title: 'GAGAL!',
+                text: 'Terjadi kesalahan sistem.'
             });
-
             btnSubmit.disabled = false;
-            loader.style.display = "none";
-            btnText.innerText = "KIRIM LAPORAN SEKARANG";
+            btnSubmit.innerHTML = "KIRIM DATA";
         }
     });
 });
