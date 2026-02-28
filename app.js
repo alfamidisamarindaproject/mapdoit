@@ -12,8 +12,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.getElementById('fill-progress');
     const cameraBox = document.querySelector('.camera-box');
     const photoStatus = document.getElementById('photo-status');
+    const tokoInput = document.getElementById('toko');
+    const tokoList = document.getElementById('toko-list');
     
     let base64Image = "";
+
+    // --- LOGIKA SEARCH DATABASE TOKO (SHEET STRUKTUR) ---
+    async function fetchTokoDatabase() {
+        try {
+            // Memanggil Apps Script dengan parameter action getToko
+            const response = await fetch(`${SCRIPT_URL}?action=getToko`);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+            
+            tokoList.innerHTML = ""; // Bersihkan list
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item; 
+                tokoList.appendChild(option);
+            });
+            console.log("Database Toko Terunduh");
+        } catch (err) {
+            console.error("Gagal memuat database toko:", err);
+        }
+    }
+
+    // Jalankan pengambilan data saat halaman dibuka
+    fetchTokoDatabase();
 
     // 1. Auto Uppercase & Validation Logic
     const inputs = ['nama', 'toko', 'rak'];
@@ -45,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // MULAI HITUNG WAKTU
         const startTime = performance.now();
 
         Swal.fire({
@@ -60,27 +84,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                
-                // OPTIMASI: 900px adalah sweet spot untuk kecepatan & kejernihan di GSheet
                 const MAX_WIDTH = 900; 
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * (MAX_WIDTH / img.width);
                 
-                // OPTIMASI: Mematikan alpha channel mempercepat render hingga 2x
                 const ctx = canvas.getContext('2d', { alpha: false });
-                
                 ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'low'; // Menghemat CPU saat memproses gambar besar
+                ctx.imageSmoothingQuality = 'low'; 
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // OPTIMASI: Quality 0.7 sangat ringan namun tetap tajam untuk teks rak
                 base64Image = canvas.toDataURL('image/jpeg', 0.7);
                 
                 preview.src = base64Image;
                 preview.style.display = 'block';
                 instruction.style.display = 'none';
                 
-                // SELESAI HITUNG WAKTU & TAMPILKAN DI BADGE
                 const endTime = performance.now();
                 const duration = Math.round(endTime - startTime);
                 
