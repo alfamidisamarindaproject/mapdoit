@@ -82,4 +82,42 @@
                 </div>
 
                 <div class="card p-4 mb-4 shadow-sm">
-                    <h6
+                    <h6 class="fw-bold mb-3 text-primary"><i class="bi bi-ui-checks me-2"></i>TUGAS HARIAN</h6>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="form-check form-switch d-flex align-items-center justify-content-between p-0">
+                            <label class="form-check-label fw-medium">Planogram Sesuai</label>
+                            <input class="form-check-input m-0" type="checkbox" id="check-plano">
+                        </div>
+                        <div class="form-check form-switch d-flex align-items-center justify-content-between p-0">
+                            <label class="form-check-label fw-medium">Kebersihan Rak</label>
+                            <input class="form-check-input m-0" type="checkbox" id="check-bersih">
+                        </div>
+                        <div class="form-check form-switch d-flex align-items-center justify-content-between p-0">
+                            <label class="form-check-label fw-medium">Label Price Update</label>
+                            <input class="form-check-input m-0" type="checkbox" id="check-label">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-4 mb-4 shadow-sm">
+                    <h6 class="fw-bold mb-3 text-primary"><i class="bi bi-image-fill me-2"></i>DOKUMENTASI</h6>
+                    <div class="upload-box" onclick="document.getElementById('file-input').click()">
+                        <div id="instruction">
+                            <i class="bi bi-camera text-primary" style="font-size: 3rem;"></i>
+                            <p class="small text-muted mt-2 mb-0">Ketuk untuk mengambil foto rak</p>
+                        </div>
+                        <img id="preview" src="" class="preview-img">
+                        <input type="file" id="file-input" class="d-none" accept="image/*" capture="environment">
+                    </div>
+                </div>
+
+                <button id="btn-submit" class="btn btn-primary btn-send w-100 shadow-sm" disabled>
+                    <i class="bi bi-send-check-fill me-2"></i>KIRIM LAPORAN SEKARANG
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
