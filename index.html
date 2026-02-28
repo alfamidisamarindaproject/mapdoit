@@ -91,6 +91,7 @@
         /* Inputs */
         .input-group-modern {
             margin-bottom: 20px;
+            position: relative;
         }
 
         .input-group-modern label {
@@ -120,6 +121,41 @@
             border-color: var(--accent);
             box-shadow: 0 0 0 5px rgba(0, 122, 255, 0.1);
         }
+
+        /* Custom Dropdown Styling */
+        .custom-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: var(--radius-md);
+            margin-top: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            z-index: 2000;
+            max-height: 220px; /* Batasi maksimal 5 item */
+            overflow-y: auto;
+            display: none;
+            border: 1px solid rgba(0,0,0,0.05);
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .dropdown-item-toko {
+            padding: 14px 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            color: var(--text-main);
+            transition: 0.2s;
+        }
+
+        .dropdown-item-toko:last-child { border-bottom: none; }
+        .dropdown-item-toko:hover { background: rgba(0, 122, 255, 0.08); color: var(--accent); }
+
+        /* Scrollbar styling */
+        .custom-dropdown::-webkit-scrollbar { width: 5px; }
+        .custom-dropdown::-webkit-scrollbar-thumb { background: #D1D1D6; border-radius: 10px; }
 
         /* Grid Tasks */
         .task-grid {
@@ -245,6 +281,11 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -273,8 +314,8 @@
                 <div class="col-6">
                     <div class="input-group-modern mb-0">
                         <label>Kode Toko</label>
-                        <input type="text" id="toko" placeholder="SG10" autocomplete="off" list="toko-list">
-                        <datalist id="toko-list"></datalist>
+                        <input type="text" id="toko" placeholder="SG10" autocomplete="off">
+                        <div id="toko-dropdown" class="custom-dropdown"></div>
                     </div>
                 </div>
                 <div class="col-6">
