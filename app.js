@@ -13,13 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const cameraBox = document.querySelector('.camera-box');
     const photoStatus = document.getElementById('photo-status');
     const tokoInput = document.getElementById('toko');
-    const tokoList = document.getElementById('toko-list');
+    
+    // Inisialisasi Dropdown Custom
+    const tokoDropdown = document.getElementById('toko-dropdown');
     
     let base64Image = "";
+    let cachedTokoData = []; 
 
-    // --- LOGIKA SEARCH DATABASE TOKO (HYBRID CACHE) ---
-    let cachedTokoData = []; // Tempat menyimpan data sementara
-
+    // --- LOGIKA SEARCH DATABASE TOKO (CUSTOM SCROLLABLE DROPDOWN) ---
     async function fetchTokoDatabase() {
         try {
             const response = await fetch(`${SCRIPT_URL}?action=getToko`);
@@ -31,31 +32,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Jalankan pengambilan data segera saat halaman dibuka
     fetchTokoDatabase();
 
-    // Trigger List saat mengetik (Input Event)
+    // Trigger List saat mengetik
     tokoInput.addEventListener('input', () => {
         const val = tokoInput.value.trim().toUpperCase();
+        tokoDropdown.innerHTML = "";
         
-        // Jika input kosong, hapus semua opsi agar list tidak muncul
         if (val.length === 0) {
-            tokoList.innerHTML = "";
+            tokoDropdown.style.display = 'none';
             return;
         }
 
-        // Tampilkan sugesti hanya yang cocok dengan ketikan
+        // Filter data berdasarkan ketikan
         const filtered = cachedTokoData.filter(item => 
             item.toUpperCase().includes(val)
         );
 
-        // Update datalist secara dinamis
-        tokoList.innerHTML = ""; 
-        filtered.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item; 
-            tokoList.appendChild(option);
-        });
+        if (filtered.length > 0) {
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-item-toko';
+                div.textContent = item;
+                
+                // Event saat item dipilih
+                div.onclick = () => {
+                    tokoInput.value = item;
+                    tokoDropdown.style.display = 'none';
+                    updateProgress(); // Validasi ulang setelah pilih
+                };
+                tokoDropdown.appendChild(div);
+            });
+            tokoDropdown.style.display = 'block';
+        } else {
+            tokoDropdown.style.display = 'none';
+        }
+    });
+
+    // Sembunyikan dropdown jika klik di luar area
+    document.addEventListener('click', (e) => {
+        if (!tokoInput.contains(e.target) && !tokoDropdown.contains(e.target)) {
+            tokoDropdown.style.display = 'none';
+        }
     });
 
     // 1. Auto Uppercase & Validation Logic
