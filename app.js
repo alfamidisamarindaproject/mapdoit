@@ -1,13 +1,17 @@
+// GANTI DENGAN URL WEB APP TERBARU DARI GOOGLE APPS SCRIPT
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxo3HLbiIm9L5oxghrqQ7lkp-v2sf0-luLawQNDGqTLtAOqMWdFk_huG8ZTvO-xRPnu/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnSubmit = document.getElementById('btn-submit');
+    const btnText = document.getElementById('btn-text');
     const fileInput = document.getElementById('file-input');
     const imgPreview = document.getElementById('img-preview');
+    const instruction = document.getElementById('instruction');
     const mandatoryInputs = document.querySelectorAll('.mandatory');
+    
     let base64Image = "";
 
-    // --- LOGIKA KOMPRESI FOTO ---
+    // --- FUNGSI KOMPRESI GAMBAR ---
     fileInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -17,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = new Image();
             img.onload = function() {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 800; // Ukuran aman agar tidak gagal kirim
+                const MAX_WIDTH = 800; // Ukuran lebar maksimal agar file ringan
                 const scaleSize = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * scaleSize;
@@ -25,30 +29,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                // Mengubah gambar ke JPEG kualitas 70% agar ringan (sekitar 100-200kb)
+                // Ubah ke JPEG kualitas 0.7 (70%) agar file sangat kecil (~150kb)
                 base64Image = canvas.toDataURL('image/jpeg', 0.7);
+                
                 imgPreview.src = base64Image;
                 imgPreview.style.display = 'block';
-                document.getElementById('instruction').style.display = 'none';
-                checkForm();
+                instruction.style.display = 'none';
+                validateForm();
             };
             img.src = event.target.result;
         };
         reader.readAsDataURL(file);
     });
 
-    function checkForm() {
-        let isComplete = true;
-        mandatoryInputs.forEach(input => { if (input.value.trim() === "") isComplete = false; });
-        btnSubmit.disabled = !(isComplete && base64Image !== "");
+    function validateForm() {
+        let allFilled = true;
+        mandatoryInputs.forEach(input => {
+            if (input.value.trim() === "") allFilled = false;
+        });
+        btnSubmit.disabled = !(allFilled && base64Image !== "");
     }
 
-    mandatoryInputs.forEach(input => input.addEventListener('input', checkForm));
+    mandatoryInputs.forEach(input => {
+        input.addEventListener('input', validateForm);
+    });
 
-    // --- LOGIKA KIRIM DATA ---
+    // --- PROSES KIRIM DATA ---
     btnSubmit.addEventListener('click', async () => {
         btnSubmit.disabled = true;
-        btnSubmit.innerHTML = "Sedang Mengirim...";
+        btnText.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Mengirim...`;
 
         const payload = {
             nama: document.getElementById('nama').value,
@@ -64,19 +73,22 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            // Menggunakan mode no-cors karena Google Apps Script sering bermasalah dengan CORS
+            // Mode 'no-cors' digunakan untuk menghindari kendala keamanan browser saat ke domain Google
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
-            alert("BERHASIL! Data sudah masuk ke Google Sheets.");
-            location.reload();
-        } catch (err) {
-            alert("Terjadi kesalahan koneksi.");
+            alert("LAPORAN BERHASIL TERKIRIM!");
+            window.location.reload();
+
+        } catch (error) {
+            console.error('Error:', error);
+            alert("Gagal mengirim data. Cek koneksi internet.");
             btnSubmit.disabled = false;
-            btnSubmit.innerHTML = "KIRIM DATA ONLINE";
+            btnText.innerHTML = "KIRIM DATA ONLINE";
         }
     });
 });
