@@ -16,7 +16,7 @@
             --bg: #F0F2F5;
             --primary: #000000;
             --accent: #007AFF;
-            --surface: rgba(255, 255, 255, 0.85);
+            --surface: rgba(255, 255, 255, 0.9);
             --text-main: #1C1C1E;
             --text-sub: #8E8E93;
             --radius-lg: 28px;
@@ -29,11 +29,11 @@
             color: var(--text-main);
             padding-bottom: 120px;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .header-nav { padding: 30px 24px 10px; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-weight: 800; font-size: 1.4rem; letter-spacing: -1px; }
-
         .progress-container { padding: 0 24px; margin-bottom: 20px; }
         .progress-bar-custom { height: 6px; background: #E5E5EA; border-radius: 10px; overflow: hidden; }
         #fill-progress { width: 0%; height: 100%; background: var(--accent); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -49,6 +49,7 @@
             margin: 0 16px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            animation: slideUp 0.6s ease forwards;
         }
 
         .input-group-modern { margin-bottom: 20px; }
@@ -77,7 +78,7 @@
         .camera-box.active { border: none; background: #000; }
         .camera-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        #compress-tag {
+        #speed-tag {
             position: absolute; bottom: 15px; background: rgba(0,0,0,0.7); color: #00FF00;
             padding: 4px 12px; border-radius: 50px; font-size: 0.65rem; font-weight: 800;
             backdrop-filter: blur(4px); display: none;
@@ -89,13 +90,18 @@
             border: none; font-weight: 800; font-size: 1.05rem; display: flex; justify-content: center; align-items: center; gap: 12px; transition: 0.3s;
         }
         .btn-main:disabled { opacity: 0.2; transform: scale(0.96); }
+        .btn-main:not(:disabled):active { transform: scale(0.94); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div class="header-nav">
         <div class="brand">MAP DO IT<span style="color:var(--accent)">.</span></div>
-        <i class="ph ph-lightning-fill" style="color: var(--accent);"></i>
+        <button class="btn btn-light rounded-pill p-2 px-3" onclick="location.reload()">
+            <i class="ph ph-arrow-counter-clockwise fw-bold"></i>
+        </button>
     </div>
 
     <div class="progress-container">
@@ -106,8 +112,8 @@
         <div class="section-title">Identity Details</div>
         <div class="glass-card">
             <div class="input-group-modern">
-                <label>Reporter Full Name</label>
-                <input type="text" id="nama" placeholder="FULL NAME" autocomplete="off">
+                <label>Reporter Name</label>
+                <input type="text" id="nama" placeholder="JOHN DOE" autocomplete="off">
             </div>
             <div class="row g-3">
                 <div class="col-6">
@@ -125,7 +131,7 @@
             </div>
         </div>
 
-        <div class="section-title">Compliance List</div>
+        <div class="section-title">Compliance Checklist</div>
         <div class="glass-card">
             <div class="task-grid">
                 <label><input type="checkbox" id="check-plano" class="task-input"><div class="task-card"><i class="ph ph-layout"></i><span>PLANOGRAM<br>SUITABLE</span></div></label>
@@ -137,13 +143,13 @@
 
         <div class="section-title">Visual Evidence</div>
         <div class="glass-card mb-5">
-            <div class="camera-box" onclick="document.getElementById('file-input').click()">
+            <div class="camera-box" id="drop-zone" onclick="document.getElementById('file-input').click()">
                 <div id="instruction" class="text-center">
-                    <i class="ph ph-camera-plus" style="font-size: 3rem; color: var(--accent);"></i>
+                    <i class="ph ph-camera-plus" style="font-size: 3.5rem; color: var(--accent);"></i>
                     <p class="small fw-bold mt-2" style="color: var(--text-sub);">CAPTURE PHOTO</p>
                 </div>
                 <img id="preview" src="" style="display: none;">
-                <div id="compress-tag">SPEED: <span id="ms">0</span>ms</div>
+                <div id="speed-tag">SPEED: <span id="ms">0</span>ms</div>
                 <input type="file" id="file-input" class="d-none" accept="image/*" capture="environment">
             </div>
         </div>
