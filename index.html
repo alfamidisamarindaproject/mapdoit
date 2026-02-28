@@ -210,68 +210,68 @@
 
     <div class="container animate-up">
         
-        <div class="section-title">Identity Details</div>
+        <div class="section-title">Detail Identitas</div>
         <div class="glass-card">
             <div class="input-group-modern">
-                <label>Reporter Full Name</label>
-                <input type="text" id="nama" placeholder="JOHN DOE" autocomplete="off">
+                <label>Nama</label>
+                <input type="text" id="nama" placeholder="Nama Lengkap" autocomplete="off">
             </div>
             <div class="row g-3">
                 <div class="col-6">
                     <div class="input-group-modern mb-0">
-                        <label>Store Code</label>
-                        <input type="text" id="toko" placeholder="SMD01" autocomplete="off">
+                        <label>Kode Toko</label>
+                        <input type="text" id="toko" placeholder="SG01" autocomplete="off">
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="input-group-modern mb-0">
-                        <label>Shelf No.</label>
-                        <input type="text" id="rak" placeholder="A-01" autocomplete="off">
+                        <label>No. Rak</label>
+                        <input type="text" id="rak" placeholder="AA1" autocomplete="off">
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="section-title">Compliance List</div>
+        <div class="section-title">Checklist</div>
         <div class="glass-card">
             <div class="task-grid">
                 <label>
                     <input type="checkbox" id="check-plano" class="task-input">
                     <div class="task-card">
                         <i class="ph ph-layout"></i>
-                        <span>PLANOGRAM<br>SUITABLE</span>
+                        <span>PLANOGRAM<br>UPDATE</span>
                     </div>
                 </label>
                 <label>
                     <input type="checkbox" id="check-label" class="task-input">
                     <div class="task-card">
                         <i class="ph ph-tag-chevron"></i>
-                        <span>LABEL PRICE<br>ACCURATE</span>
+                        <span>LABEL PRICE<br>UPDATE</span>
                     </div>
                 </label>
                 <label>
                     <input type="checkbox" id="check-exp" class="task-input">
                     <div class="task-card">
                         <i class="ph ph-calendar-check"></i>
-                        <span>EXPIRED DATE<br>CHECKED</span>
+                        <span>EXPIRED DATE<br>CHECK</span>
                     </div>
                 </label>
                 <label>
                     <input type="checkbox" id="check-bersih" class="task-input">
                     <div class="task-card">
                         <i class="ph ph-broom"></i>
-                        <span>SHELF<br>CLEANLINESS</span>
+                        <span>KEBERSIHAN<br>RAK</span>
                     </div>
                 </label>
             </div>
         </div>
 
-        <div class="section-title">Visual Evidence</div>
+        <div class="section-title">BUKTI FOTO</div>
         <div class="glass-card mb-5">
             <div class="camera-box" id="upload-trigger" onclick="document.getElementById('file-input').click()">
                 <div id="instruction" class="text-center">
                     <i class="ph ph-camera-plus" style="font-size: 3rem; color: var(--accent);"></i>
-                    <p class="small fw-bold mt-2" style="color: var(--text-sub);">CAPTURE SHELF PHOTO</p>
+                    <p class="small fw-bold mt-2" style="color: var(--text-sub);">UPLOAD BUKTI FOTO RAK</p>
                 </div>
                 <img id="preview" src="" style="display: none;">
                 <div id="photo-status" class="camera-badge" style="display: none;">PHOTO READY</div>
@@ -283,7 +283,7 @@
 
     <div class="bottom-nav">
         <button id="btn-submit" class="btn-main shadow-lg" disabled>
-            <span>COMPLETE REPORT</span>
+            <span>KIRIM REPORT</span>
             <i class="ph ph-arrow-right-bold"></i>
         </button>
     </div>
