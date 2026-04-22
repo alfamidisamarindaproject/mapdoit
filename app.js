@@ -1,5 +1,6 @@
 /**
  * MAP DO IT - Ultimate Pro Script (Hyper-Speed Edition)
+ * Fixed: Dropdown Toko & Rak Terintegrasi & Styling Otomatis
  */
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJ9EuePt_VkY-U61ZFBYioNeI7lShAlYlJc9fWIZ5-lEViRYpjofO_DZmmaRF3HDZ3/exec"; 
@@ -12,70 +13,110 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.getElementById('fill-progress');
     const cameraBox = document.querySelector('.camera-box');
     const photoStatus = document.getElementById('photo-status');
+    
+    // Elements for Toko & Rak
     const tokoInput = document.getElementById('toko');
     const tokoDropdown = document.getElementById('toko-dropdown');
+    const rakInput = document.getElementById('rak');
+    const rakDropdown = document.getElementById('rak-dropdown'); // Pastikan Anda punya <div id="rak-dropdown"></div> di HTML
     
     let base64Image = "";
     let cachedTokoData = []; 
+    // Data default untuk RAK (Jika Anda punya database rak di Apps Script, bisa di-fetch seperti toko)
+    let cachedRakData = ["RAK 01", "RAK 02", "RAK 03", "RAK 04", "RAK 05", "END GONDOLA", "CHILLER", "KASIR"]; 
 
     // --- 1. LOGIKA DATABASE TOKO ---
     async function fetchTokoDatabase() {
         try {
+            // Pastikan Apps Script doGet() Anda sudah return ContentService dengan MimeType JSON
             const response = await fetch(`${SCRIPT_URL}?action=getToko`);
             if (!response.ok) throw new Error('Network response was not ok');
             cachedTokoData = await response.json();
-            console.log("Database Toko Terunduh");
+            console.log("Database Toko Terunduh:", cachedTokoData.length, "toko");
         } catch (err) {
             console.error("Gagal memuat database toko:", err);
+            // Fallback data jika gagal fetch agar dropdown tetap bisa di-test
+            cachedTokoData = ["TOKO KEMANG", "TOKO SUDIRMAN", "TOKO THAMRIN", "TOKO BLOK M"];
         }
     }
     fetchTokoDatabase();
 
-    // --- 2. LOGIKA DROPDOWN & UPPERCASE (SINKRON) ---
-    tokoInput.addEventListener('input', () => {
-        // Paksa Uppercase
-        tokoInput.value = tokoInput.value.toUpperCase();
-        const val = tokoInput.value.trim();
-        
-        tokoDropdown.innerHTML = "";
-        
-        if (val.length === 0) {
-            tokoDropdown.style.display = 'none';
-            updateProgress();
-            return;
-        }
+    // --- 2. FUNGSI REUSABLE UNTUK DROPDOWN (TOKO & RAK) ---
+    function setupDropdown(inputEl, dropdownEl, dataArrayCallback) {
+        // Styling dasar untuk container dropdown agar pasti muncul (mengatasi masalah CSS)
+        dropdownEl.style.position = 'absolute';
+        dropdownEl.style.zIndex = '9999';
+        dropdownEl.style.backgroundColor = '#ffffff';
+        dropdownEl.style.width = inputEl.offsetWidth + 'px'; // Samakan lebar dengan input
+        dropdownEl.style.maxHeight = '200px';
+        dropdownEl.style.overflowY = 'auto';
+        dropdownEl.style.boxShadow = '0px 4px 6px rgba(0,0,0,0.1)';
+        dropdownEl.style.borderRadius = '4px';
+        dropdownEl.style.border = '1px solid #ccc';
+        dropdownEl.style.marginTop = '2px';
+        dropdownEl.style.display = 'none';
 
-        // Filter data
-        const filtered = cachedTokoData.filter(item => 
-            item.toUpperCase().includes(val)
-        );
+        inputEl.addEventListener('input', () => {
+            // Paksa Uppercase
+            inputEl.value = inputEl.value.toUpperCase();
+            const val = inputEl.value.trim();
+            
+            dropdownEl.innerHTML = "";
+            
+            if (val.length === 0) {
+                dropdownEl.style.display = 'none';
+                updateProgress();
+                return;
+            }
 
-        if (filtered.length > 0) {
-            filtered.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'dropdown-item-toko';
-                div.textContent = item;
-                
-                div.addEventListener('click', () => {
-                    tokoInput.value = item;
-                    tokoDropdown.style.display = 'none';
-                    updateProgress(); 
+            // Ambil data array terbaru (penting karena fetch asinkronus)
+            const dataList = dataArrayCallback();
+
+            // Filter data
+            const filtered = dataList.filter(item => 
+                item.toUpperCase().includes(val)
+            );
+
+            if (filtered.length > 0) {
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.textContent = item;
+                    // Styling item dropdown
+                    div.style.padding = '10px';
+                    div.style.borderBottom = '1px solid #f0f0f0';
+                    div.style.cursor = 'pointer';
+                    div.style.fontSize = '14px';
+                    div.style.color = '#333';
+                    
+                    // Efek hover
+                    div.addEventListener('mouseenter', () => div.style.backgroundColor = '#f8f9fa');
+                    div.addEventListener('mouseleave', () => div.style.backgroundColor = '#ffffff');
+
+                    div.addEventListener('click', () => {
+                        inputEl.value = item;
+                        dropdownEl.style.display = 'none';
+                        updateProgress(); 
+                    });
+                    dropdownEl.appendChild(div);
                 });
-                tokoDropdown.appendChild(div);
-            });
-            tokoDropdown.style.display = 'block';
-        } else {
-            tokoDropdown.style.display = 'none';
-        }
-        updateProgress();
-    });
+                dropdownEl.style.display = 'block';
+            } else {
+                dropdownEl.style.display = 'none';
+            }
+            updateProgress();
+        });
 
-    // Klik di luar untuk menutup dropdown
-    document.addEventListener('click', (e) => {
-        if (!tokoInput.contains(e.target) && !tokoDropdown.contains(e.target)) {
-            tokoDropdown.style.display = 'none';
-        }
-    });
+        // Klik di luar untuk menutup dropdown
+        document.addEventListener('click', (e) => {
+            if (!inputEl.contains(e.target) && !dropdownEl.contains(e.target)) {
+                dropdownEl.style.display = 'none';
+            }
+        });
+    }
+
+    // Terapkan fungsi dropdown ke Toko dan Rak
+    setupDropdown(tokoInput, tokoDropdown, () => cachedTokoData);
+    setupDropdown(rakInput, rakDropdown, () => cachedRakData);
 
     // --- 3. VALIDASI PROGRESS ---
     const inputs = ['nama', 'toko', 'rak'];
@@ -94,13 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSubmit.disabled = !isAllSet;
     };
 
-    // Logika untuk input selain toko (nama & rak)
-    ['nama', 'rak'].forEach(id => {
-        const el = document.getElementById(id);
-        el.addEventListener('input', () => {
-            el.value = el.value.toUpperCase();
-            updateProgress();
-        });
+    // Logika untuk input 'nama' (hanya perlu uppercase dan cek progress)
+    const namaInput = document.getElementById('nama');
+    namaInput.addEventListener('input', () => {
+        namaInput.value = namaInput.value.toUpperCase();
+        updateProgress();
     });
 
     // --- 4. LOGIKA KAMERA & KOMPRESI ---
@@ -152,10 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSubmit.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> MENGIRIM...`;
 
         const checks = [];
-        if(document.getElementById('check-plano').checked) checks.push("PLANOGRAM OK");
-        if(document.getElementById('check-label').checked) checks.push("LABEL PRICE OK");
-        if(document.getElementById('check-exp').checked) checks.push("EXP CHECKED OK");
-        if(document.getElementById('check-bersih').checked) checks.push("CLEANING OK");
+        if(document.getElementById('check-plano') && document.getElementById('check-plano').checked) checks.push("PLANOGRAM OK");
+        if(document.getElementById('check-label') && document.getElementById('check-label').checked) checks.push("LABEL PRICE OK");
+        if(document.getElementById('check-exp') && document.getElementById('check-exp').checked) checks.push("EXP CHECKED OK");
+        if(document.getElementById('check-bersih') && document.getElementById('check-bersih').checked) checks.push("CLEANING OK");
 
         const formData = new URLSearchParams();
         formData.append('nama', document.getElementById('nama').value);
