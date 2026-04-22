@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJ9EuePt_VkY-U61ZFBYioNeI7lShAlYlJc9fWIZ5-lEViRYpjofO_DZmmaRF3HDZ3/exec"; 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxl-Us1tKLKASMIXEAj568fNbTHAn6Gx9Qbe3QtuO-TWhQ1r6VR0nCYfL6BW6Ht8ikpw/exec"; 
 
 
 
