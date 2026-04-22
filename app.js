@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCy4Qv-0rpiXGcXH0l7oQ8G8ITm9DryWAo8lHZvMHcL_b9zsiIwYeBktzojEqEmkx3/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxl-Us1tKLKASMIXEAj568fNbTHAn6Gx9Qbe3QtuO-TWhQ1r6VR0nCYfL6BW6Ht8ikpw/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
   const btnSubmit = document.getElementById('btn-submit');
