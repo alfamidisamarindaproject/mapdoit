@@ -18,18 +18,46 @@ document.addEventListener('DOMContentLoaded', () => {
     let base64Image = "";
     let cachedTokoData = []; 
 
-    // --- 1. LOGIKA DATABASE TOKO ---
-    async function fetchTokoDatabase() {
-        try {
-            const response = await fetch(`${SCRIPT_URL}?action=getToko`);
-            if (!response.ok) throw new Error('Network response was not ok');
-            cachedTokoData = await response.json();
-            console.log("Database Toko Terunduh");
-        } catch (err) {
-            console.error("Gagal memuat database toko:", err);
-        }
+  // --- 1. LOGIKA DATABASE TOKO ---
+async function fetchTokoDatabase() {
+  try {
+    console.log("Mencoba mengambil data dari:", SCRIPT_URL);
+    
+    // HAPUS { method: 'GET' } dan biarkan default. 
+    // TAMBAHKAN redirect: 'follow' karena Google selalu melakukan 302 Redirect.
+    // JANGAN PERNAH menambahkan headers apa pun di sini.
+    const response = await fetch(`${SCRIPT_URL}?action=getToko`, {
+        redirect: 'follow' 
+    });
+
+    // Jika response diarahkan ke halaman login, url-nya akan berubah
+    if (response.url.includes("ServiceLogin") || response.type === 'opaqueredirect') {
+        throw new Error("Terblokir Pintu Login Google. CORS Error.");
     }
-    fetchTokoDatabase();
+
+    if (!response.ok) throw new Error(`Gagal Fetch: ${response.status} ${response.statusText}`);
+    
+    const data = await response.json();
+    
+    if (data.length > 0 && data[0].toString().includes("Error")) {
+        console.error("Backend Error:", data[0]);
+        return;
+    }
+    
+    cachedTokoData = data;
+    console.log("Database Toko Terunduh, Jumlah:", cachedTokoData.length);
+
+  } catch (err) {
+    console.error("GAGAL TOTAL CORS/NETWORK:", err.message);
+    Swal.fire({
+      icon: 'error',
+      title: 'Akses Ditolak',
+      text: 'Gagal mengambil data toko. Pastikan Anda tidak login multi-akun Google, atau cek Deployment Script Anda.',
+    });
+  }
+}
+
+fetchTokoDatabase();
 
     // --- 2. LOGIKA DROPDOWN & UPPERCASE (SINKRON) ---
     tokoInput.addEventListener('input', () => {
