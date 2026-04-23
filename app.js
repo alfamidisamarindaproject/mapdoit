@@ -1,5 +1,5 @@
 // PASTIKAN URL INI ADALAH URL DARI DEPLOYMENT VERSI TERBARU
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlwabIjFBoBFToaYuZJi6h9IzuKw3BoerIMWI5Ksx7TtzbLMLUXHKgE0OkMIqeHFTp4A/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJ9EuePt_VkY-U61ZFBYioNeI7lShAlYlJc9fWIZ5-lEViRYpjofO_DZmmaRF3HDZ3/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
   const btnSubmit = document.getElementById('btn-submit');
