@@ -1,7 +1,6 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQJM7roKKj_P1yO5QJvUebsYDqheW4_cd1jc469tU1lbucONgxWMGLUMP7OO0TLRAL0w/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjLKELtOamk80N4dGzM0nzDnKFvQ1r3xWWfaghteMHmWemNOB6p_ZmJdTyvAsWrAHvaw/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
-  // --- Elemen DOM ---
   const btnSubmit = document.getElementById('btn-submit');
   const fileInput = document.getElementById('file-input');
   const preview = document.getElementById('preview');
@@ -12,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const tokoInput = document.getElementById('toko');
   const tokoDropdown = document.getElementById('toko-dropdown');
 
-  // --- Variabel State ---
   let base64Image = "";
   let cachedTokoData = [];
 
@@ -20,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function fetchTokoDatabase() {
     try {
       const response = await fetch(`${SCRIPT_URL}?action=getToko`);
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) throw new Error('Network error');
       cachedTokoData = await response.json();
       console.log("Database Toko Terunduh");
     } catch (err) {
@@ -30,9 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   fetchTokoDatabase();
 
-  // --- 2. LOGIKA DROPDOWN & UPPERCASE (SINKRON) ---
+  // --- 2. LOGIKA DROPDOWN ---
   tokoInput.addEventListener('input', () => {
-    // Paksa Uppercase
     tokoInput.value = tokoInput.value.toUpperCase();
     const val = tokoInput.value.trim();
     
@@ -44,9 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Filter data
     const filtered = cachedTokoData.filter(item => 
-      item.toUpperCase().includes(val)
+      item && item.toUpperCase().includes(val)
     );
 
     if (filtered.length > 0) {
@@ -69,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateProgress();
   });
 
-  // Klik di luar untuk menutup dropdown
   document.addEventListener('click', (e) => {
     if (!tokoInput.contains(e.target) && !tokoDropdown.contains(e.target)) {
       tokoDropdown.style.display = 'none';
@@ -82,21 +77,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const updateProgress = () => {
     let filledCount = 0;
     inputs.forEach(id => {
-      if (document.getElementById(id).value.trim() !== "") filledCount++;
+      const el = document.getElementById(id);
+      if (el && el.value.trim() !== "") filledCount++;
     });
     if (base64Image) filledCount++;
     
     const percentage = (filledCount / 5) * 100;
     progressBar.style.width = percentage + "%";
     
-    const isAllSet = inputs.every(id => document.getElementById(id).value.trim() !== "") && base64Image;
+    const isAllSet = inputs.every(id => {
+      const el = document.getElementById(id);
+      return el && el.value.trim() !== "";
+    }) && base64Image;
+    
     btnSubmit.disabled = !isAllSet;
   };
 
-  // Logika untuk input selain toko (nama & rak)
   ['nik', 'nama', 'rak'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) { // Safety check
+    if (el) {
       el.addEventListener('input', () => {
         el.value = el.value.toUpperCase();
         updateProgress();
@@ -104,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- 4. LOGIKA KAMERA & KOMPRESI ---
+  // --- 4. LOGIKA KAMERA ---
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -148,31 +147,35 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsDataURL(file);
   });
 
-  // --- 5. LOGIKA KIRIM DATA ---
+  // --- 5. LOGIKA KIRIM DATA (PAKAI JSON) ---
   btnSubmit.addEventListener('click', async () => {
     btnSubmit.disabled = true;
     btnSubmit.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> MENGIRIM...`;
 
     const checks = [];
-    // Menambahkan optional chaining (?) agar tidak error jika checkbox tidak ada di HTML
     if (document.getElementById('check-plano')?.checked) checks.push("PLANOGRAM OK");
     if (document.getElementById('check-label')?.checked) checks.push("LABEL PRICE OK");
     if (document.getElementById('check-exp')?.checked) checks.push("EXP CHECKED OK");
     if (document.getElementById('check-bersih')?.checked) checks.push("CLEANING OK");
 
-    const formData = new URLSearchParams();
-    formData.append('nik', document.getElementById('nik').value);
-    formData.append('nama', document.getElementById('nama').value);
-    formData.append('toko', document.getElementById('toko').value);
-    formData.append('rak', document.getElementById('rak').value);
-    formData.append('checklist', checks.join(" | ") || "NO TASK SELECTED");
-    formData.append('foto', base64Image);
+    // BUNGKUS PAYLOAD DALAM BENTUK JSON
+    const payload = {
+      nik: document.getElementById('nik').value,
+      nama: document.getElementById('nama').value,
+      toko: document.getElementById('toko').value,
+      rak: document.getElementById('rak').value,
+      checklist: checks.join(" | ") || "NO TASK SELECTED",
+      foto: base64Image
+    };
 
     try {
       await fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
-        body: formData
+        headers: {
+          'Content-Type': 'text/plain', // Harus text/plain agar bisa lewat CORS
+        },
+        body: JSON.stringify(payload)
       });
 
       Swal.fire({
