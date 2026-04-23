@@ -1,4 +1,5 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjLKELtOamk80N4dGzM0nzDnKFvQ1r3xWWfaghteMHmWemNOB6p_ZmJdTyvAsWrAHvaw/exec";
+// NANTI GANTI URL INI DENGAN HASIL DEPLOY TERBARU ANDA
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlwrIB0YnUoWU9RsCNA0ekYVSaFmXcPHedCwNgYR-Yi_w2av2RedZQugJv-yIhIH2j8w/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
   const btnSubmit = document.getElementById('btn-submit');
@@ -17,16 +18,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- 1. LOGIKA DATABASE TOKO ---
   async function fetchTokoDatabase() {
     try {
-      const response = await fetch(`${SCRIPT_URL}?action=getToko`);
-      if (!response.ok) throw new Error('Network error');
+      // Tambahkan nocache agar browser tidak menggunakan cache error sebelumnya
+      const cacheBuster = new Date().getTime();
+      const response = await fetch(`${SCRIPT_URL}?action=getToko&nocache=${cacheBuster}`);
+      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
       cachedTokoData = await response.json();
-      console.log("Database Toko Terunduh");
+      console.log("Database Toko Terunduh, Jumlah:", cachedTokoData.length);
     } catch (err) {
-      console.error("Gagal memuat database toko:", err);
+      console.error("Gagal memuat database toko. Pastikan setting 'Anyone'. Detail:", err);
     }
   }
   
-  fetchTokoDatabase();
+  if(SCRIPT_URL !== "MASUKKAN_URL_BARU_DI_SINI") {
+      fetchTokoDatabase();
+  } else {
+      console.warn("Harap masukkan SCRIPT_URL yang benar di app.js");
+  }
 
   // --- 2. LOGIKA DROPDOWN ---
   tokoInput.addEventListener('input', () => {
@@ -147,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsDataURL(file);
   });
 
-  // --- 5. LOGIKA KIRIM DATA (PAKAI JSON) ---
+  // --- 5. LOGIKA KIRIM DATA ---
   btnSubmit.addEventListener('click', async () => {
     btnSubmit.disabled = true;
     btnSubmit.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> MENGIRIM...`;
@@ -158,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('check-exp')?.checked) checks.push("EXP CHECKED OK");
     if (document.getElementById('check-bersih')?.checked) checks.push("CLEANING OK");
 
-    // BUNGKUS PAYLOAD DALAM BENTUK JSON
     const payload = {
       nik: document.getElementById('nik').value,
       nama: document.getElementById('nama').value,
@@ -173,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         mode: 'no-cors',
         headers: {
-          'Content-Type': 'text/plain', // Harus text/plain agar bisa lewat CORS
+          'Content-Type': 'text/plain',
         },
         body: JSON.stringify(payload)
       });
