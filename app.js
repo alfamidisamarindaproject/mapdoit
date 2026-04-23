@@ -1,5 +1,5 @@
 // GANTI SCRIPT URL JIKA ADA DEPLOYMENT BARU
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8IEMuMNjrT7BXSALU9JmpW2MClPQzLEChu5lAwM9FaCyV-N5QAVEaW0_UPTqvnAAmoA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-38ZE-EsfabTWi3JyoJURLhLlnfaFpqxoNmtAGoER5vh8yrpRbsyIWUTO11iakeYAGw/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
   const btnSubmit = document.getElementById('btn-submit');
