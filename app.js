@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- 3. VALIDASI PROGRESS ---
-  const inputs = ['nama', 'toko', 'rak'];
+  const inputs = ['nik', 'nama', 'toko', 'rak'];
   
   const updateProgress = () => {
     let filledCount = 0;
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     if (base64Image) filledCount++;
     
-    const percentage = (filledCount / 4) * 100;
+    const percentage = (filledCount / 5) * 100;
     progressBar.style.width = percentage + "%";
     
     const isAllSet = inputs.every(id => document.getElementById(id).value.trim() !== "") && base64Image;
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Logika untuk input selain toko (nama & rak)
-  ['nama', 'rak'].forEach(id => {
+  ['nik', 'nama', 'rak'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { // Safety check
       el.addEventListener('input', () => {
@@ -161,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('check-bersih')?.checked) checks.push("CLEANING OK");
 
     const formData = new URLSearchParams();
+    formData.append('nik', document.getElementById('nik').value);
     formData.append('nama', document.getElementById('nama').value);
     formData.append('toko', document.getElementById('toko').value);
     formData.append('rak', document.getElementById('rak').value);
