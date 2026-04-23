@@ -1,7 +1,7 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbnse1b5HoZ5jhiJChnQYWHCI3mwzDue-67Mi8zKGZxvjb6Pj26_aTJuxmcIFMa8Pk5w/exec";
+// GANTI SCRIPT URL JIKA ADA DEPLOYMENT BARU
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8IEMuMNjrT7BXSALU9JmpW2MClPQzLEChu5lAwM9FaCyV-N5QAVEaW0_UPTqvnAAmoA/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
-  // --- Elemen DOM ---
   const btnSubmit = document.getElementById('btn-submit');
   const fileInput = document.getElementById('file-input');
   const preview = document.getElementById('preview');
@@ -12,30 +12,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const tokoInput = document.getElementById('toko');
   const tokoDropdown = document.getElementById('toko-dropdown');
 
-  // --- Variabel State ---
   let base64Image = "";
   let cachedTokoData = [];
 
   // --- 1. LOGIKA DATABASE TOKO ---
   async function fetchTokoDatabase() {
     try {
-      const response = await fetch(`${SCRIPT_URL}?action=getToko`);
-      if (!response.ok) throw new Error('Network response was not ok');
-      cachedTokoData = await response.json();
-      console.log("Database Toko Terunduh");
+      // Tambahkan mode cors untuk GET
+      const response = await fetch(`${SCRIPT_URL}?action=getToko`, { method: 'GET' });
+      if (!response.ok) throw new Error('CORS atau Network Error');
+      const data = await response.json();
+      
+      // Deteksi jika dari backend membalas error string (bukan array)
+      if (data.length > 0 && data[0].toString().includes("Error")) {
+          console.error("Backend Error:", data[0]);
+          return;
+      }
+      
+      cachedTokoData = data;
+      console.log("Database Toko Terunduh, Jumlah:", cachedTokoData.length);
     } catch (err) {
-      console.error("Gagal memuat database toko:", err);
+      console.error("Gagal memuat database toko. Pastikan Web App ter-deploy dengan akses 'Anyone'.", err);
     }
   }
   
   fetchTokoDatabase();
 
-  // --- 2. LOGIKA DROPDOWN & UPPERCASE (SINKRON) ---
+  // --- 2. LOGIKA DROPDOWN ---
   tokoInput.addEventListener('input', () => {
-    // Paksa Uppercase
     tokoInput.value = tokoInput.value.toUpperCase();
     const val = tokoInput.value.trim();
-    
     tokoDropdown.innerHTML = "";
     
     if (val.length === 0) {
@@ -44,17 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Filter data
-    const filtered = cachedTokoData.filter(item => 
-      item.toUpperCase().includes(val)
-    );
+    const filtered = cachedTokoData.filter(item => item.toUpperCase().includes(val));
 
     if (filtered.length > 0) {
       filtered.forEach(item => {
         const div = document.createElement('div');
         div.className = 'dropdown-item-toko';
         div.textContent = item;
-        
         div.addEventListener('click', () => {
           tokoInput.value = item;
           tokoDropdown.style.display = 'none';
@@ -69,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateProgress();
   });
 
-  // Klik di luar untuk menutup dropdown
   document.addEventListener('click', (e) => {
     if (!tokoInput.contains(e.target) && !tokoDropdown.contains(e.target)) {
       tokoDropdown.style.display = 'none';
@@ -78,25 +79,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- 3. VALIDASI PROGRESS ---
   const inputs = ['nama', 'toko', 'rak'];
-  
   const updateProgress = () => {
     let filledCount = 0;
     inputs.forEach(id => {
-      if (document.getElementById(id).value.trim() !== "") filledCount++;
+      const el = document.getElementById(id);
+      if (el && el.value.trim() !== "") filledCount++;
     });
     if (base64Image) filledCount++;
     
-    const percentage = (filledCount / 4) * 100;
-    progressBar.style.width = percentage + "%";
+    progressBar.style.width = ((filledCount / 4) * 100) + "%";
     
-    const isAllSet = inputs.every(id => document.getElementById(id).value.trim() !== "") && base64Image;
+    const isAllSet = inputs.every(id => document.getElementById(id) && document.getElementById(id).value.trim() !== "") && base64Image;
     btnSubmit.disabled = !isAllSet;
   };
 
-  // Logika untuk input selain toko (nama & rak)
   ['nama', 'rak'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) { // Safety check
+    if (el) {
       el.addEventListener('input', () => {
         el.value = el.value.toUpperCase();
         updateProgress();
@@ -104,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- 4. LOGIKA KAMERA & KOMPRESI ---
+  // --- 4. LOGIKA KAMERA ---
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -112,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startTime = performance.now();
     Swal.fire({
       title: 'MEMPROSES FOTO',
-      text: 'Optimasi kecepatan tinggi...',
+      text: 'Optimasi gambar...',
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading()
     });
@@ -122,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 900; 
+        const MAX_WIDTH = 800; // Dikecilkan sedikit agar pengiriman via POST lebih stabil
         canvas.width = MAX_WIDTH;
         canvas.height = img.height * (MAX_WIDTH / img.width);
         
@@ -130,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.imageSmoothingQuality = 'low'; 
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         
-        base64Image = canvas.toDataURL('image/jpeg', 0.7);
+        base64Image = canvas.toDataURL('image/jpeg', 0.6); // Kompresi ke 60% agar Base64 tidak terlalu berat
         preview.src = base64Image;
         preview.style.display = 'block';
         instruction.style.display = 'none';
@@ -148,19 +147,19 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsDataURL(file);
   });
 
-  // --- 5. LOGIKA KIRIM DATA ---
+  // --- 5. KIRIM DATA KE GOOGLE SCRIPT ---
   btnSubmit.addEventListener('click', async () => {
     btnSubmit.disabled = true;
     btnSubmit.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> MENGIRIM...`;
 
     const checks = [];
-    // Menambahkan optional chaining (?) agar tidak error jika checkbox tidak ada di HTML
     if (document.getElementById('check-plano')?.checked) checks.push("PLANOGRAM OK");
     if (document.getElementById('check-label')?.checked) checks.push("LABEL PRICE OK");
     if (document.getElementById('check-exp')?.checked) checks.push("EXP CHECKED OK");
     if (document.getElementById('check-bersih')?.checked) checks.push("CLEANING OK");
 
-    const formData = new URLSearchParams();
+    // Menggunakan objek FormData biasa (Lebih aman untuk Base64)
+    const formData = new FormData();
     formData.append('nama', document.getElementById('nama').value);
     formData.append('toko', document.getElementById('toko').value);
     formData.append('rak', document.getElementById('rak').value);
@@ -170,22 +169,23 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       await fetch(SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
+        mode: 'no-cors', 
         body: formData
       });
 
       Swal.fire({
         icon: 'success',
         title: 'LAPORAN TERKIRIM',
-        text: 'Data telah dikirim ke AC dan AM.',
+        text: 'Data telah dikirim ke Sheet.',
         confirmButtonColor: '#000',
         confirmButtonText: 'OKE'
       }).then(() => location.reload());
 
     } catch (err) {
-      Swal.fire({ icon: 'error', title: 'GAGAL', text: 'Cek koneksi atau coba lagi.' });
+      console.error(err);
+      Swal.fire({ icon: 'error', title: 'GAGAL', text: 'Cek koneksi internet Anda.' });
       btnSubmit.disabled = false;
-      btnSubmit.innerHTML = `<span>KIRIM REPORT</span> <i class="ph ph-arrow-right-bold"></i>`;
+      btnSubmit.innerHTML = `<span>KIRIM REPORT</span>`;
     }
   });
 });
