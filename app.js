@@ -1,5 +1,5 @@
-// GANTI SCRIPT URL JIKA ADA DEPLOYMENT BARU
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJ9EuePt_VkY-U61ZFBYioNeI7lShAlYlJc9fWIZ5-lEViRYpjofO_DZmmaRF3HDZ3/exec";
+// PASTIKAN URL INI ADALAH URL DARI DEPLOYMENT VERSI TERBARU
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlwabIjFBoBFToaYuZJi6h9IzuKw3BoerIMWI5Ksx7TtzbLMLUXHKgE0OkMIqeHFTp4A/exec";
 
 document.addEventListener('DOMContentLoaded', () => {
   const btnSubmit = document.getElementById('btn-submit');
@@ -9,74 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressBar = document.getElementById('fill-progress');
   const cameraBox = document.querySelector('.camera-box');
   const photoStatus = document.getElementById('photo-status');
-  const tokoInput = document.getElementById('toko');
-  const tokoDropdown = document.getElementById('toko-dropdown');
 
   let base64Image = "";
-  // Harus menggunakan window agar bisa diakses oleh JSONP
-  window.cachedTokoData = []; 
 
-  // --- 1. LOGIKA DATABASE TOKO DENGAN BYPASS CORS (JSONP) ---
-  window.handleTokoData = function(data) {
-    if (data.length > 0 && data[0].toString().includes("Error")) {
-        console.error("Backend Error:", data[0]);
-        return;
-    }
-    window.cachedTokoData = data;
-    console.log("Database Toko Berhasil Diunduh, Jumlah:", window.cachedTokoData.length);
-  };
-
-  function fetchTokoDatabaseBypassCORS() {
-    console.log("Meminta data dengan mode Bypass CORS...");
-    const script = document.createElement('script');
-    // Tambahkan timestamp (t) agar browser tidak mengambil cache lama
-    script.src = `${SCRIPT_URL}?action=getToko&callback=handleTokoData&t=${new Date().getTime()}`;
-    document.body.appendChild(script);
-  }
-  
-  fetchTokoDatabaseBypassCORS();
-
-  // --- 2. LOGIKA DROPDOWN ---
-  tokoInput.addEventListener('input', () => {
-    tokoInput.value = tokoInput.value.toUpperCase();
-    const val = tokoInput.value.trim();
-    tokoDropdown.innerHTML = "";
-    
-    if (val.length === 0) {
-      tokoDropdown.style.display = 'none';
-      updateProgress();
-      return;
-    }
-
-    const filtered = window.cachedTokoData.filter(item => item.toUpperCase().includes(val));
-
-    if (filtered.length > 0) {
-      filtered.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'dropdown-item-toko';
-        div.textContent = item;
-        div.addEventListener('click', () => {
-          tokoInput.value = item;
-          tokoDropdown.style.display = 'none';
-          updateProgress(); 
-        });
-        tokoDropdown.appendChild(div);
-      });
-      tokoDropdown.style.display = 'block';
-    } else {
-      tokoDropdown.style.display = 'none';
-    }
-    updateProgress();
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!tokoInput.contains(e.target) && !tokoDropdown.contains(e.target)) {
-      tokoDropdown.style.display = 'none';
-    }
-  });
-
-  // --- 3. VALIDASI PROGRESS ---
+  // --- 1. VALIDASI PROGRESS & INPUT ---
   const inputs = ['nama', 'toko', 'rak'];
+  
   const updateProgress = () => {
     let filledCount = 0;
     inputs.forEach(id => {
@@ -91,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btnSubmit.disabled = !isAllSet;
   };
 
-  ['nama', 'rak'].forEach(id => {
+  // Mengubah semua input teks menjadi huruf besar otomatis
+  inputs.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.addEventListener('input', () => {
@@ -101,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- 4. LOGIKA KAMERA ---
+  // --- 2. LOGIKA KAMERA & KOMPRESI ---
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -145,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsDataURL(file);
   });
 
-  // --- 5. KIRIM DATA KE GOOGLE SCRIPT ---
+  // --- 3. KIRIM DATA KE GOOGLE SCRIPT ---
   btnSubmit.addEventListener('click', async () => {
     btnSubmit.disabled = true;
     btnSubmit.innerHTML = `<div class="spinner-border spinner-border-sm me-2"></div> MENGIRIM...`;
@@ -156,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('check-exp')?.checked) checks.push("EXP CHECKED OK");
     if (document.getElementById('check-bersih')?.checked) checks.push("CLEANING OK");
 
-    // MENGGUNAKAN URLSearchParams (Paling aman untuk Apps Script)
     const formData = new URLSearchParams();
     formData.append('nama', document.getElementById('nama').value);
     formData.append('toko', document.getElementById('toko').value);
@@ -167,26 +105,24 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       await fetch(SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors', // Penting agar tidak diblokir browser saat POST
+        mode: 'no-cors', // Mencegah blokir CORS saat POST
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: formData.toString()
       });
 
-      // Karena no-cors, kita tidak bisa membaca response asli server. 
-      // Tapi karena format form sudah benar, 99.9% pasti masuk.
       Swal.fire({
         icon: 'success',
         title: 'LAPORAN TERKIRIM',
-        text: 'Data telah dikirim ke Sheet.',
+        text: 'Data telah berhasil dikirim.',
         confirmButtonColor: '#000',
         confirmButtonText: 'OKE'
       }).then(() => location.reload());
 
     } catch (err) {
       console.error(err);
-      Swal.fire({ icon: 'error', title: 'GAGAL', text: 'Koneksi internet terputus saat mengirim.' });
+      Swal.fire({ icon: 'error', title: 'GAGAL', text: 'Gagal mengirim. Periksa koneksi internet Anda.' });
       btnSubmit.disabled = false;
       btnSubmit.innerHTML = `<span>KIRIM REPORT</span>`;
     }
